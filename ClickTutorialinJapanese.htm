@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://www.geocities.jp/eijispace/2012/0419_2.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1024">
+<title>ClickTutorialinJapanese</title>
+
+<style>
+body {
+	color: #000;
+	font-family: Verdana,Arial,'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック','MS PGothic',sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	letter-spacing: 0;
+	line-height: 1.3;
+	margin:0;
+	_overflow:hidden;
+	padding:0;
+}
+#left_frame {
+	color: #000;
+	background-color: #fff;
+	border-color: #ccc;
+	border-right: 3px;
+	border-style: solid;
+	left:0;
+	height:100%;
+	margin:0;
+	padding:0;
+	position:fixed;
+	_position:absolute;
+	top:0;
+	width:250px;
+}
+#right_frame {
+	margin:0 0 0 260px;
+	padding:0;
+	height:100%;
+	_overflow:auto;
+}
+.note{ /* spanタグのtitle属性に豆知識を書く。マウスオーバーすると読める。 */
+  
+}
+#footnote-container{
+	margin: 0px 10px;
+	padding: 5px;
+	border-color: #fff;
+	border: 1px;
+	border-style: solid;
+}
+p#footnote-contents{
+
+}
+sup{
+	color: #39F;
+	font-size: 1.3rem;
+	cursor: pointer;
+}
+a:visited{
+
+}
+
+	.console{
+	background-color: #262626;
+	color: #EEF;
+	font-family: consolas;
+
+	}.console:before{content:"$ "; color:#FF0;}
+
+h3{
+	counter-increment: number;
+  text-decoration: underline;
+	}h3:before{font-size: 1.5rem; content : "" counter(number) ". ";}
+
+ul{
+padding-left: 20px;
+}
+
+</style>
+<style type="text/css"></style></head>
+
+<script>
+ footnotes = [
+  'empty'
+ ,'elementのドキュメント ... 以下の階層にある、各elementの詳細が載っている文書のこと。'
+ ];
+
+ function setFootnote(number){
+   document.getElementById("footnote-contents").innerHTML = footnotes[number];
+ }
+</script>
+
+
+<body>
+
+<div id="left_frame">
+  <div>
+    <p> 目次</p>
+    <ol>
+			<li><a href="#what-is-click">clickとは何か</a></li>
+			<li><a href="#install-click">インストールする</a></li>
+			<li>試してみる
+				<ul>
+  				<li><a href="#hello-world">Hello Worldに当たることを行う</a></li>
+  				<li><a href="#test-device">既に用意されたClickのルータを動かしてみる</a></li>
+				  <li><a href="#change-string">Configuration Stringを変えてみる</a></li>
+				  <li><a href="#read-thesis">elementとその関連概念を知る</a></li>
+				  <li><a href="#make-ip-router">既存のelementでIPルータを作る</a></li>
+				</ul>
+			</li>
+			<li>作ってみる
+				<ul>
+  				<li><a href="#null-element">何もしないNullElement</a></li>
+				  <li><a href="#api-element">内部APIを用いるelement</a></li>
+				  <li><a href="#call-library">外部ライブラリを呼び出す</a></li>
+				</ul>
+			</li>
+			<li>更に調べる
+				<ul>
+  				<li><a href="#two-arguments">elementの2引数(?)</a></li>
+				  <li><a href="#click-detail">作者による内部詳細</a></li>
+				  <li><a href="#miscellaneous">その他まだ未整理の話題</a></li>
+				</ul>
+			</li>
+			<li>その他</li>
+
+    </ol>
+  </div>
+  <div id="footnote-container">
+    <section>脚注がここに表示されるなのですがまだ未実装です</section>
+    <p id="footnote-contents"> ---- </p>
+  </div>
+</div>
+
+<div id="right_frame">
+<h1> Click Tutorial in Japanese ###  2014/03/24 - </h1>
+<hr>
+
+<h3 id="what-is-click">clickとは</h3>
+
+<ul>
+  <li>ルーターの機能を記述するためのC++の巨大なライブラリである。言語だとも言える。</li>
+  <li>Unix系OS(Linux, Mac OS X, Android)上で動く。</li>
+  <li>拡張可能なためC++の知識が相当必要である。</li>
+  <li><a href="http://read.cs.ucla.edu/click/">公式サイト</a>では大文字でClickと表記されているが、編集容易なため以下ではclickと表記することがある。</li>
+</ul>
+
+<h3 id="install-click">インストールする</h3>
+
+<p>前提としてgit, make, g++がインストールされているとする。</p>
+<pre class="console">
+git clone https://github.com/kohler/click.git
+cd click
+./configure --disable-linuxmodule --enable-local
+make
+sudo make install 
+</pre>
+
+<p>以上でインストールは終了である。</p>
+<p>--disable-linuxmoduleは確か無いとインストールが失敗するはず。　--enable-localについては無くても上記のsudo make installまでは成功するが、<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">ここ</a>に記載があるように自作機能を追加する際に必要である。オンにしておいたほうが無難だろう。この2つの詳細は
+<pre class="console">
+./configure --help
+</pre>
+
+	を参照されたい。
+</p>
+
+<p>また、</p>
+
+
+<h3>試してみる</h3>
+ 
+<h4 id="hello-world">ステップ１：　Hello Worldに当たることを行う (公式サイトの<a href="http://www.read.cs.ucla.edu/click/tutorial1#preparation">このチュートリアル</a>の簡易版である。)</h4>
+
+<pre class="console">
+pwd # print working directory 
+~/click
+</pre>
+
+において(以下では断りが無ければ常にこのディレクトリに居るとする)、
+
+<pre class="console">
+click conf/test.click
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+</pre>
+
+となればHello World成功である。まだconf/test.clickの中身は理解せずとも問題ない。
+
+<h4 id="test-device">ステップ２：　既に用意されたclickのルータを動かしてみる</h4>
+
+<pre class="console">
+sudo click conf/test-device.click
+</pre>
+<p>とした上で、例えばブラウザでWebページを開くなどするとeth0に届いたパケットの先頭数十バイトが表示される。eth0がないマシン上の場合は適宜変更するとよい(ifconfigで調べたのち、例えば開発機ではtest-device.clickのeth0をen0に書き換えた)。
+</p>
+
+
+<h4 id="change-string">ステップ３：　Configuration Stringを変えてみる。</h4>
+
+<p>Configuration Stringの定義は後述する。エディタでconf/test.clickを開いて、LIMIT 5の部分をLIMIT 4にしてみる。そしてclick test.clickとして実行すると、</p>
+
+
+<pre class="console">
+click conf/test.click
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+</pre>
+
+<p>のように、先ほど5回表示されたパケットの先頭バイトが4回のみ表示されるようになった。</p>
+<p>同様にconf/test-device.clickをエディタから開いて、Print(ok)をPrint(noProblem)とすると、先ほど出力でokと書かれていた場所にnoProblemと表示される。一方で、Print(no problem)とすると、</p>
+
+<pre class="console">
+click conf/test.click
+  no: unknown argument
+Router could not be initialized!
+</pre>
+
+<p>というエラーメッセージが出て実行されない。この場合にはスペースが含められないと分かる。</p>
+
+<h4 id="read-thesis">ステップ4: elementとその関連概念を知る</h4>
+
+<h5>概念1: Configuration File</h5>
+
+<p>まず初めに、今までの話に登場してきた.clickという拡張子のファイルはConfiguration Fileと呼ばれる。以下では「コンフファイル」もしくは「コンフィグファイル」と略記する。
+ルーターに実現させたい処理を記述したものがコンフファイルである。
+<pre class="console">
+click testFile.click
+</pre>
+<p>のように標準入力からクリックのプログラムに渡して実行することで、内部に記された処理が実行される。</p>
+<p>よって「Clickでルーターを作る」と言った際、その最終段階はこの<br>
+「<strong>コンフファイルを作り（各処理ごとのConfiguration String(引数のようなもの)を）修正する</strong>」<br>
+ことだと言える。
+
+コンフファイルはより具体的には、elementと呼ばれる処理のまとまり（ふつうのプログラミング書籍でいうモジュールに相当する）を並べて作られる。FromDevice(eth0) -> Print(ok) -> ToDevice(eth0);という1行のコンフファイルであれば、FromDevice(eth0)とPrint(ok)とToDevice(eth0)の３つがelementである。
+</p>
+
+<h5>概念2: element</h5>
+
+<p>訳さずにelementのまま理解したほうが良いと思われる。作者の設計思想が如実に反映されており、日本語の「要素」にはない細かな形式的な制限がある。</p>
+
+<p>input port, output port, configuration string, element classの4つで主に構成される。図解や制限は<a href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf">cｌｉｃｋ作者の論文</a>のp.4にあるelementの図に任せる。</p>
+
+<p>この図からはinput portは必ず1つ以上必要に思えるが、p.5の図を見るとFromDeviceなどはinput portがない。同様にToDeviceにはoutput portがない。最終的にelementを自作する際は、このように設計段階でのinput portやoutput portの数、またpullやpushと言った処理の種類に合わせてコードを書いていくことになる。</p>
+
+<h5>概念3: pull, push, agnostic</h5>
+
+<p>上記論文p.4のelementの図において、黒く塗りつぶされている三角・四角がpushのinput portとoutput portであり、そうでない三角・四角がpullのinput portとoutput portである。
+pushのinput portはpushのoutput portにしか繋げない。またpullのinput portはpullのoutput portにしか繋げない。
+絵で言えば■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されないということである（エラーが出て落ちる）。</p>
+<p>agnosticは後続するelementがpushならばpush, pullならばpullになる柔軟なelementである。実装するのが難しいのかもしれない。</p>
+
+<p>
+このpushとpullがC++上でどのように実現されているかはclick/elements/nullelement.ccを見ると掴めるかもしれない。</p>
+<pre class="console">
+void
+PushNullElement::push(int, Packet *p)
+{
+  output(0).push(p);
+}
+
+PullNullElement::PullNullElement()
+{
+}
+
+Packet *
+PullNullElement::pull(int)
+{
+  return input(0).pull();
+}
+
+</pre>
+
+
+<h5>概念4: keywords</h5>
+
+<p><a href="http://www.read.cs.ucla.edu/click/elements">elementを1つ1つ説明している公式ドキュメント</a>では、KEYWORDSという単語が登場する。LIMIT 5のLIMITなどがそれである。</p>
+
+
+<p>以上の4概念がまず理解してほしいことの全てである。論文後半ではCPUスケジューリングについて言及があるが、新しいelementを１つ作るような初歩の段階では放って構わない。</p>
+
+<h5>注. configuration stringの書き方、文法</h5>
+
+<p>http://www.read.cs.ucla.edu/click/docs/language#configuration-stringsに文字列、IPアドレスなどconfiguration string１つ１つの記法が紹介されている。
+大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++ではエラーが出る文法なので、例外的な拡張である。
+<br>
+上のURLの説明をhttp://www.read.cs.ucla.edu/click/elements以下にある各elementの説明と併用すれば問題なく一発で書けるはず。
+</p>
+
+<h4 id="make-ip-router">既存のelementでIPルータを作る</h4>
+<p>
+日経ネットワーク2013年12月号で『ソフトウェア教材「Click」で学ぶルーターの動作』という20pほどの特集が組まれている。
+おそらく2014年3月現時点でClickの動作について日本語でまとまって解説されているのはこの特集だけだと思われる。数十個の既存elementを組み合わせるとARP処理まで含めたＩＰルータが作れると述べている。
+日経の雑誌なので学内回線もしくはssl-vpnで読めるらしい。</p>
+
+<h3>作ってみる</h3>
+
+<h4 id="null-element">何もしないNullElement</h4>
+
+
+<p>
+自作のelementを使う場合、configureの段階で--enable-localオプションを設定する必要がある。click/elements/local以外のディレクトリでも作る方法があるようだがまだ理解していない。
+このチュートリアルでは<a href="#install-click">インストールする</a>の項目で既にそれに言及しているため問題はないだろうが、仮にそのオプションを指定していない場合は上記のURLの./configure --prefix=$HOMEを実行する前の作業から、設定をやり直す必要が生じる。</p>
+
+<p>これをしておかないと以下でclick/elements/local以下に自作のelementを追加しても、sudo make installされたとき（clickが、その自作のelementを含めてプログラムを再構成するとき）にコンパイルされない。</p>
+
+
+<p>自作elementを追加したあとは、毎回
+<pre class="console">
+make elemlist      #「sudo make install」でコンパイルされるelementの一覧(click/elements.conf)を書き換えるコマンド。
+sudo make install  #elements.confに従って自作elementをコンパイルする。C++の文法ミスなどある場合はここでエラーが出る。
+</pre>
+の2つのコマンドを実行する。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを実行できるようになる。
+（myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。）</p>
+
+<h5>Clickにおける新しいelementの実装方法について</h5>
+
+<p>新しいelementの作り方の手順自体は<a href="http://www.read.cs.ucla.edu/click/faq#creating-your-own-elements">FAQ</a>にまとまっている。
+class_name(), port_count()はほぼ確実に実装することになる。
+push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput portを持つelementがそれぞれ実装する（３つのうち、どれか１つだけということである）。</p>
+
+<p>以上を踏まえて、click/elements/nullelement.ccを参考に作ろう。</p>
+
+
+<h4 id="api-element">内部APIを用いるelement</h4>
+
+<p>新しいelementをClickで実装する際はAPIの理解が必須である。Clickは一般的なC++プログラマなら普通使うであろう「C++のSTLに含まれるStringなどの標準ライブラリクラス」を使わず、独自にそれらのStringクラスに相当するものをを実装し直して使うなどしており、呼び出す関数名や返ってくる戻り値などについてClick内部のソースコードを見ながら逐一確認する必要があるからだ。</p>
+
+<p>API（クラスとそのメンバ関数群）はhttp://read.cs.ucla.edu/click/doxygen/classes.html にまとまっている。
+実際には以下のタブを頻用することでAPIを探していく。</p>
+<pre>
+Classes:
+  Alphabetical List: 全クラスの一覧。名前だけで探したい時に使う。
+  Class List:        全クラスの一覧に加え一行説明が読める。
+  Class Members:     クラスメンバ名で探し、「対応する説明」へのリンク先へ飛べる。特に関数やtypedefなどで引けるのはありがたい。
+Files: 
+  [code]:            ソースコードのうち.hhだけを一覧・閲覧できる。上述のClass Membersと共通の「対応する説明」へ飛べる。
+
+  「対応する説明」とは、各関数の戻り値や引数、型情報など実際のソースコードレベルの情報である。
+</pre>
+
+<h4 id="call-library">外部ライブラリを呼び出す</h4>
+
+<p>書き途中</p>
+
+
+<h3>更に調べる</h3>
+<h5 id="two-arguments">elementの2引数: elementが入力として扱うものはパケットとconfiguration string</h5>
+
+もう一つelementという概念の設計思想として指摘しておくべき点としては、elementは引数にあたるものを２種類取るということである。その２つとはパケットとconfiguration stringである。これは、コンフファイルを書く最終段階でも、後述する「新しいelementを作る過程」でも、常に2種類を意識する必要がある。全然違う性格を持つからである。
+
+【コンフファイルを書く最終段階において】
+たとえば　FromDevice(eth0) -> Print(ok) -> Discard;　という1行だけのコンフファイルで考えてみる。
+configuration stringは関数の引数のような形式で渡されている。たとえばFromDeviceというelementにはeth0、Printというelementにはokが渡されている。
+一方でパケットは、 -> という（矢印を模した）記号の前でプロセスされたものが引数として渡されている。　
+->　が前に存在していないFromDeviceは -> ではなくconfiguration stringによって受け渡しが行われている。ここも忘れやすいので注意。
+
+【新しいelementを作る過程において】
+パケットはソースコード中ではPrint::simple_action(Packet *p){といったように関数の引数として渡されている。
+configuration stringは対応する.ccファイルの関数configure()の中で
+ if (Args(conf, this, errh)
+	.read_p("MAXLENGTH", bytes)
+	.read("LENGTH", Args::deprecated, bytes)
+	.read("TIMESTAMP", timestamp)
+	.complete() < 0)
+	return -1;
+のように、パースされたのちにsimple_actionなどのパケット処理を行う別の関数内で使えるようになっている。
+
+(simple_action()は、そのelementのもとにパケットが来た際に自動で（イベントドリブンで）呼び出される関数である。)
+
+
+一方で、elementはoutput portsの数自体はいくつあっても良いのに、他のelementに渡す物体としてはパケットだけというのは面白い。configuration stringを（コンフファイルにおける）後続のelementに渡すようなことは基本的には行われていないのである。パケットはカスケードのように次々に後続のelementに渡されていく一方で、configuration stringはそのelementだけが参照できるデータである。このように、clickにおけるデータの受け渡しには設計上の特徴がある。
+
+<h5 id="click-detail">作者による内部詳細</h5>
+
+
+<p><a href="http://www.read.cs.ucla.edu/click/clickunderhood">ここ</a>が恐らく一番詳しい。</p>
+
+<h5 id="miscellaneous">その他まだ未整理の話題</h5>
+
+
+<h5>（発展）複数element間でのデータの受け渡しについて</h5>
+
+　以上のデータ受け渡し構造に基づいて考えると、複数element間で「同一の制御用のデータ」を扱うにはconfiguration stringではなくパケット自体に付与するしかないという発想に至る。この「同一の制御用のデータ」のことをClickではcolorと呼んでいる。
+
+ただしcolorはバイト数に制限があるなど、elementより遥かに癖がある（形式上の制限が厳しい）ために、複数element間で大きな制御用データをやり取りしたい場合には自作elementを使うしかないと思われる。この点についてはまだ調査中である。
+
+http://www.read.cs.ucla.edu/click/docs/language#configuration-parametersの方法で出来る。
+
+例として、click/conf/mazu-net.clickには
+
+elementclass GatewayDevice {
+  $device |
+  from :: FromDevice($device)
+  -> output;
+  input -> q :: Queue(1024)
+  -> to :: ToDevice($device);
+  ScheduleInfo(from .1, to 1);
+}
+
+のように$deviceが2回参照されている。
+
+
+<h5>configuration fileの作成方法について</h5>
+
+<pre>
+
+click/conf/test-device.clickというコンフファイルの実行内容は以下の1行のみである。
+
+FromDevice(eth0) -> Print(ok) -> Discard;
+
+これは、eth0というネットワークインターフェイス(以下NIC)からのパケットを全て「複製」し、okというラベルと共にそのパケットの「先頭何バイトか」を標準出力に表示したあと、そのパケットを「破棄する」というルーターに等しい。
+ここで一つ注意すべきなのは、「　」で括った語句の意味内容は、実際にはこのコンフファイルを読んだだけでは理解できない。「複製」と言うが、では元々NICに入ってきたパケット（複製元のパケット）はどうなっているのか。「先頭何バイトか」と言うがバイト数を変えることはできないのか。「破棄する」というが複製元のパケットも破棄するのか、それとも複製後のパケットだけを破棄するのかどうなのか。clickのコンフファイルは見た目の簡潔さを重視しているため、コンフファイルを見ただけではこれらの実行内容を調べることはできない。
+
+これらの実行内容を調べる手段は２つ存在する。
+
+１．公式サイトのelements (http://www.read.cs.ucla.edu/click/elements)のページにある英語という自然言語で読む。
+２．click/elements以下にあるstandard/print.ccなどを直に読んで、処理内容をプログラミング言語という形式言語から読み解く。
+
+当然ながら2.の方が正確ではあるが、同時に残念ながら2.の方が難易度が高い。上述した「stringを自分で実装し直している」という比較的珍しい方針からも分かるように、Click自体はかなり高度なプログラミングテクニックを用いて記述されているため、線形に目を通したのではとても読めないコードが満載である。私もctagsなどのソースコード閲覧支援プログラムを用いて読解を試みているが全然歯が立たない。そのため、2.に挑む場合は以下のどちらかの理解支援方法が必要になるだろう。
+
+A.プログラミングの有識者に問い合わせる。究極的には作者Eddie Cohler氏に聞く。
+B.各種C++ライブラリの参考書とネットワークの専門書を頼りに理解していく。
+
+どちらも「必ず通用する、何度でも行える」というものではない。
+
+以上のことから、1.の公式サイトの記述を読むことがClickのelementsの理解方法としてふさわしいと思われる。ただし上述のelementsのページは辞書が好きな人なら分かると思うが入門書や講義調に描かれている訳ではなくあくまで「誰かにとっての必要事項（めったに使わない変数の設定なども含まれる）」を並べ立てている、いわば博物誌や標本のような情報の並べ方をしているので、通して全て読むといった形の読書が通じるものではない。以上のことから、Clickを勉強する際には常にelementsのページを横に開いておくスタイルが望ましいと思われる。
+
+elementsのページを飛ばし読みしながら、自分がルーターに付けたい機能を実現できるelementsはどれかを選択していく。
+これが「◆clickにおけるconfiguration fileにおいて」の最終段階として挙げた作業の、一つ前の作業だと思われる。これを作業Bと以下では呼称する。
+
+そして仮に、そのようなelementsを（まだan elementとして存在していない、もしくは既存のelementsを繋げれば求めている機能が実現されることに気付けなかった）などの理由で見出せなかった場合、作業Bと並行して「自分で新しいelementを実装する」という作業Cが必要となる。
+
+</pre>
+
+<h5>以上で紹介したelementsにもAPIにも出てこない関数やマクロ定数について</h5>
+<p>
+　click/ns/nsclick.ccで定義される引数なしのclick_random()がそれである。
+このような関数の定義元を探す場合、ソースコードにタグ付けするcscopeやctagsといったソフトを使うしかないと思われる。私はsublime text 3のctagsパッケージにずいぶん助けられている。</p>
+
+
+
+<h5> Clickの位置づけについて</h5>
+<pre>
+
+　（まだまだ勉強中の身であるため認識が間違っている可能性が高い。よってこの項目の記述内容は容易に変動するだろう。）
+　ClickはUnix系OSにおけるネットワーク系コマンド群をKohler氏の思想によってまとめ上げ、機能を追加し、さらに拡張可能にした巨大なプログラムである。
+
+その複雑化の制御の過程で単に標準入力のコマンドのような設定項目の羅列や項目の羅列である設定ファイルではなく、DSLのような特性が生じた。
+(※DSL…Domain Specific Languageドメイン固有言語。特定のタスク遂行に特化した言語。コンパイル支援におけるmake、文章構造化におけるHTMLなどがその例。)
+Kohler氏の研究興味分野にプログラミング言語が入っていることは興味深い（networks, programming languagesと並ぶのは比較的珍しい）。
+
+その結果としてネットワークの設定が標準入力コマンドのオプション引数やいわゆる設定ファイルよりも遥かに人間の思考に沿ったかたちで記述・構築可能になった。これがClickの思想的な業績であると私は考える。この発想は東京大学・中尾彰宏教授のToy-Block Networkingなどの研究に影響を与えたと想定される。
+
+Clickは今まで述べてきたようにelements間については厳格な形式制限があるが、ソースコードのレベルにおいては様々なライブラリを柔軟に取り込むことができる。
+STLの標準ライブラリを取り込むことも可能であるし、たとえばnetstatの機能を内部に追加するなども(更に高度になるが)可能である。
+実際、Clickのどれかのelementはiptablesコマンドをそのまま呼び出しているらしい。
+</pre>
+
+<h3>オマケ：　C++知識チェックリスト</h3>
+
+以下の知識があると望ましい。
+<ol>
+<li> CLICK_ENDDECLSという大文字を見て「マクロだから置換されるな」と直感が湧く。</li>
+<li> Print::simple_action(Packet *p)を見て、「Printクラスのメンバ関数simple_actionがPacketクラスのインスタンスのポインタをpという識別子で受け取っている」と読める。</li>
+<li> volatileを見て「なんだっけこれ、久しぶりに見たなググるか」ぐらいの感覚で慌てず対応できる。</li>
+<li> uint32_tを見てunsigned int 32 bitsあたりの略でおよそ0~40億ぐらいの値を返すと分かる。</li>
+<li> return (bc < 0 ? b : (compar(a, c, thunk) < 0 ? c : a));を見て「返り値は3種類だな」と読める。</li>
+<li> click_chatter("rtti_user\n");を見たときに\nから「文字出力関数だ」と直感できる。</li>
+<li> inline関数は.hhと.ccのどちらのファイルに含めるべきかがリンケージを理由として説明できると分かる。</li>
+<li> extern "C" を見ると背筋がビクッとする。</li>
+<li> const変数とconstメンバ関数はかなり違うと実感している（後者は全てのメンバ変数をconstにする）。  </li>
+<li>以下の 
+<pre>
+
+if (Args(conf, this, errh)   
+  .read_p("LABEL", label)  
+  .read_p("MAXLENGTH", bytes)  
+\#if CLICK_LINUXMODULE  
+  .read("CPU", print_cpu)  
+\#endif  
+  .complete() < 0)  
+  return -1;  
+</pre>
+
+　を見て、「詳細は分からないが引数を任意の数だけパースできそうだ」「コンパイル時に可能なオプションが増減する場合があるようだ」と読める。</li>
+</ol>
+
+</div><!-- div id == right_frame -->
+<!-- 2014/04/02 目次をフレーム化するためにhtml化 -->
+</body></html>
