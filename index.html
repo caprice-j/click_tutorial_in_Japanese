@@ -3,9 +3,75 @@
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1024">
-<title>ClickTutorialinJapanese</title>
+<title>Clickチュートリアル</title>
+<script type="text/javascript" src="js/jquery-2.1.0.js"></script>
+<script type="text/javascript">
+jQuery(function(){
+    // h3～H5タグから目次を生成 (h1は文章タイトル。h2は目次タイトル。h6はh5と同様の修飾をするが、目次には書かないもの。)
+    var idcount = 1;   
+    var toc = '<h2>ClickTutorial目次</h2>';
+    var currentlevel = 0;
+    jQuery(".tocChild :header",this).each(function(){
+        this.id = "toc_" + idcount;
+        idcount++;
+        var level = 0;
+        if(this.nodeName.toLowerCase() == "h3") {
+            level = 1;
+        } else if(this.nodeName.toLowerCase() == "h4") {
+            level = 2;
+        } else if(this.nodeName.toLowerCase() == "h5") {
+            level = 3;
+        } else if(this.nodeName.toLowerCase() == "h6") {
+            return true; // continue
+        }
+        while(currentlevel <level) {
+            toc += "<ol>";
+            currentlevel++;
+        }
+        while(currentlevel> level) {
+            toc += "<\/ol>";
+            currentlevel--;
+        }
+        toc += '<li><a href="#' + this.id + '">' + jQuery(this).html() + "<\/a><\/li>\n";
+       
+        jQuery(this).append(' <a href="#tutorialTitle" class="toclink">↑<\/a>');
+    });
+    while(currentlevel> 0) {
+        toc += "<\/ol>";
+        currentlevel--;
+    }
+    jQuery("#table-of-contents-div").html(toc);
+});
 
+</script>
 <style>
+/* 目次部分 */
+#table-of-contents-div {
+    border: 1px solid #AAA;
+    background-color: #F9F9F9;
+    padding: 5px;
+    font-size: 95%;
+    width: 70%;
+}
+#table-of-contents-div h2 {
+    margin-left:10px;
+    font-size: 100%;
+    font-weight: bold;
+    color: #666666;
+}
+#table-of-contents-div ol{
+    list-style-type: none;
+    margin: 6px 0 6px 2em; 
+}
+a.toclink {
+    font-family: "ＭＳ Ｐゴシック", Osaka, "ヒラギノ角ゴ Pro W3", sans-serif;
+    text-decoration: underline;
+    font-size: 50%;
+    font-weight: normal;
+}
+
+/* 目次部分ここまで*/
+
 body {
 	color: #000;
 	font-family: Verdana,Arial,'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック','MS PGothic',sans-serif;
@@ -63,18 +129,18 @@ a:visited{
 	.console{
 	background-color: #262626;
 	color: #EEF;
+	padding-left: 5px;
 	font-family: consolas;
 
-	}.console:before{content:"$ "; color:#FF0;}
+	}.console:before{content:""; color:#FF0;}
 
 h3{
 	counter-increment: number;
   text-decoration: underline;
 	}h3:before{font-size: 1.5rem; content : "" counter(number) ". ";}
 
-ul{
-padding-left: 20px;
-}
+ul{padding-left: 20px;}
+ol{padding-left: 20px;}
 
 </style>
 <style type="text/css"></style></head>
@@ -94,18 +160,18 @@ padding-left: 20px;
 <body>
 
 <div id="left_frame">
-  <div>
-    <p> 目次</p>
-    <ol>
+  <div id="table-of-contents-div">
+    <!-- <p> 目次</p> -->
+   <!--  <ol>
 			<li><a href="#what-is-click">clickとは何か</a></li>
 			<li><a href="#install-click">インストールする</a></li>
 			<li>試してみる
 				<ul>
   				<li><a href="#hello-world">Hello Worldに当たることを行う</a></li>
-  				<li><a href="#test-device">既に用意されたClickのルータを動かしてみる</a></li>
-				  <li><a href="#change-string">Configuration Stringを変えてみる</a></li>
+  				<li><a href="#test-device">既に用意されたClickのルータを動かす</a></li>
+				  <li><a href="#change-string">Configuration Stringを変える</a></li>
 				  <li><a href="#read-thesis">elementとその関連概念を知る</a></li>
-				  <li><a href="#make-ip-router">既存のelementでIPルータを作る</a></li>
+				  <li><a href="#make-ip-router">既存のelementでIPルータを作る(発展)</a></li>
 				</ul>
 			</li>
 			<li>作ってみる
@@ -124,24 +190,24 @@ padding-left: 20px;
 			</li>
 			<li>その他</li>
 
-    </ol>
+    </ol> -->
   </div>
   <div id="footnote-container">
-    <section>脚注がここに表示されるなのですがまだ未実装です</section>
+    <section>脚注がここに表示される予定ですが未実装です</section>
     <p id="footnote-contents"> ---- </p>
   </div>
 </div>
 
 <div id="right_frame">
-<h1> Click Tutorial in Japanese ###  2014/03/24 - </h1>
+<h1 id="tutorialTitle"> Click Tutorial in Japanese ver.0.2 </h1>
 <hr>
-
+<div class="tocChild">
 <h3 id="what-is-click">clickとは</h3>
 
 <ul>
-  <li>ルーターの機能を記述するためのC++の巨大なライブラリである。言語だとも言える。</li>
+  <li>ルーターの機能を記述するためのC++の巨大なライブラリである。C++	の上で作られた言語とも言える。</li>
   <li>Unix系OS(Linux, Mac OS X, Android)上で動く。</li>
-  <li>拡張可能なためC++の知識が相当必要である。</li>
+  <li>拡張可能であり、C++の知識がかなり必要とされる。</li>
   <li><a href="http://read.cs.ucla.edu/click/">公式サイト</a>では大文字でClickと表記されているが、編集容易なため以下ではclickと表記することがある。</li>
 </ul>
 
@@ -157,7 +223,7 @@ sudo make install
 </pre>
 
 <p>以上でインストールは終了である。</p>
-<p>--disable-linuxmoduleは確か無いとインストールが失敗するはず。　--enable-localについては無くても上記のsudo make installまでは成功するが、<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">ここ</a>に記載があるように自作機能を追加する際に必要である。オンにしておいたほうが無難だろう。この2つの詳細は
+<p>--disable-linuxmoduleは確か無いとインストールが失敗するはず。　--enable-localについては無くても上記のsudo make installまでは成功するが、<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">ここ</a>に記載があるように、のちのち自作機能を追加する際に必要である。オンにしておいたほうが無難だろう。この2つの詳細は
 <pre class="console">
 ./configure --help
 </pre>
@@ -165,13 +231,11 @@ sudo make install
 	を参照されたい。
 </p>
 
-<p>また、</p>
-
 
 <h3>試してみる</h3>
  
-<h4 id="hello-world">ステップ１：　Hello Worldに当たることを行う (公式サイトの<a href="http://www.read.cs.ucla.edu/click/tutorial1#preparation">このチュートリアル</a>の簡易版である。)</h4>
-
+<h4 id="hello-world">Hello Worldに当たることを行う</h4>
+<p> (公式サイトの<a href="http://www.read.cs.ucla.edu/click/tutorial1#preparation">このチュートリアル</a>の簡易版である。)</p>
 <pre class="console">
 pwd # print working directory 
 ~/click
@@ -190,7 +254,7 @@ ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
 
 となればHello World成功である。まだconf/test.clickの中身は理解せずとも問題ない。
 
-<h4 id="test-device">ステップ２：　既に用意されたclickのルータを動かしてみる</h4>
+<h4 id="test-device">既存のclickルータを動かす</h4>
 
 <pre class="console">
 sudo click conf/test-device.click
@@ -199,7 +263,7 @@ sudo click conf/test-device.click
 </p>
 
 
-<h4 id="change-string">ステップ３：　Configuration Stringを変えてみる。</h4>
+<h4 id="change-string">Configuration Stringを変える</h4>
 
 <p>Configuration Stringの定義は後述する。エディタでconf/test.clickを開いて、LIMIT 5の部分をLIMIT 4にしてみる。そしてclick test.clickとして実行すると、</p>
 
@@ -223,9 +287,9 @@ Router could not be initialized!
 
 <p>というエラーメッセージが出て実行されない。この場合にはスペースが含められないと分かる。</p>
 
-<h4 id="read-thesis">ステップ4: elementとその関連概念を知る</h4>
+<h4 id="read-thesis">elementとその関連概念を知る</h4>
 
-<h5>概念1: Configuration File</h5>
+<h5>Configuration File</h5>
 
 <p>まず初めに、今までの話に登場してきた.clickという拡張子のファイルはConfiguration Fileと呼ばれる。以下では「コンフファイル」もしくは「コンフィグファイル」と略記する。
 ルーターに実現させたい処理を記述したものがコンフファイルである。
@@ -240,19 +304,19 @@ click testFile.click
 コンフファイルはより具体的には、elementと呼ばれる処理のまとまり（ふつうのプログラミング書籍でいうモジュールに相当する）を並べて作られる。FromDevice(eth0) -> Print(ok) -> ToDevice(eth0);という1行のコンフファイルであれば、FromDevice(eth0)とPrint(ok)とToDevice(eth0)の３つがelementである。
 </p>
 
-<h5>概念2: element</h5>
+<h5>element</h5>
 
 <p>訳さずにelementのまま理解したほうが良いと思われる。作者の設計思想が如実に反映されており、日本語の「要素」にはない細かな形式的な制限がある。</p>
 
-<p>input port, output port, configuration string, element classの4つで主に構成される。図解や制限は<a href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf">cｌｉｃｋ作者の論文</a>のp.4にあるelementの図に任せる。</p>
+<p>input port, output port, configuration string, element classの4つで主に構成される。図解や制限は<a href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf">click作者の論文</a>のp.4にあるelementの図に任せる。</p>
 
-<p>この図からはinput portは必ず1つ以上必要に思えるが、p.5の図を見るとFromDeviceなどはinput portがない。同様にToDeviceにはoutput portがない。最終的にelementを自作する際は、このように設計段階でのinput portやoutput portの数、またpullやpushと言った処理の種類に合わせてコードを書いていくことになる。</p>
+<p>p.4の図からはinput portは全てのelementに必要に思えるが、そのすぐ下の図を見るとFromDeviceなどはinput portがない。同様にToDeviceにはoutput portがない。最終的にelementを自作する際は、このように設計段階でのinput portやoutput portの数、またpullやpushと言った処理の種類に合わせてコードを書いていくことになる。</p>
 
-<h5>概念3: pull, push, agnostic</h5>
+<h5>pull, push, agnostic</h5>
 
 <p>上記論文p.4のelementの図において、黒く塗りつぶされている三角・四角がpushのinput portとoutput portであり、そうでない三角・四角がpullのinput portとoutput portである。
 pushのinput portはpushのoutput portにしか繋げない。またpullのinput portはpullのoutput portにしか繋げない。
-絵で言えば■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されないということである（エラーが出て落ちる）。</p>
+絵で言えば、</p><p>■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されない</p><p>ということである（エラーが出て落ちる）。</p>
 <p>agnosticは後続するelementがpushならばpush, pullならばpullになる柔軟なelementである。実装するのが難しいのかもしれない。</p>
 
 <p>
@@ -277,14 +341,14 @@ PullNullElement::pull(int)
 </pre>
 
 
-<h5>概念4: keywords</h5>
+<h5>keywords</h5>
 
 <p><a href="http://www.read.cs.ucla.edu/click/elements">elementを1つ1つ説明している公式ドキュメント</a>では、KEYWORDSという単語が登場する。LIMIT 5のLIMITなどがそれである。</p>
 
 
 <p>以上の4概念がまず理解してほしいことの全てである。論文後半ではCPUスケジューリングについて言及があるが、新しいelementを１つ作るような初歩の段階では放って構わない。</p>
 
-<h5>注. configuration stringの書き方、文法</h5>
+<h6>注. configuration stringの書き方、文法</h6>
 
 <p>http://www.read.cs.ucla.edu/click/docs/language#configuration-stringsに文字列、IPアドレスなどconfiguration string１つ１つの記法が紹介されている。
 大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++ではエラーが出る文法なので、例外的な拡張である。
@@ -292,7 +356,7 @@ PullNullElement::pull(int)
 上のURLの説明をhttp://www.read.cs.ucla.edu/click/elements以下にある各elementの説明と併用すれば問題なく一発で書けるはず。
 </p>
 
-<h4 id="make-ip-router">既存のelementでIPルータを作る</h4>
+<h4 id="make-ip-router">(発展)既存のelementでIPルータを作る</h4>
 <p>
 日経ネットワーク2013年12月号で『ソフトウェア教材「Click」で学ぶルーターの動作』という20pほどの特集が組まれている。
 おそらく2014年3月現時点でClickの動作について日本語でまとまって解説されているのはこの特集だけだと思われる。数十個の既存elementを組み合わせるとARP処理まで含めたＩＰルータが作れると述べている。
@@ -313,12 +377,10 @@ PullNullElement::pull(int)
 <p>自作elementを追加したあとは、毎回
 <pre class="console">
 make elemlist      #「sudo make install」でコンパイルされるelementの一覧(click/elements.conf)を書き換えるコマンド。
-sudo make install  #elements.confに従って自作elementをコンパイルする。C++の文法ミスなどある場合はここでエラーが出る。
+sudo make install  #elements.confに従って自作elementをコンパイルする。C++の文法ミスなどはここでエラーが出る。
 </pre>
 の2つのコマンドを実行する。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを実行できるようになる。
 （myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。）</p>
-
-<h5>Clickにおける新しいelementの実装方法について</h5>
 
 <p>新しいelementの作り方の手順自体は<a href="http://www.read.cs.ucla.edu/click/faq#creating-your-own-elements">FAQ</a>にまとまっている。
 class_name(), port_count()はほぼ確実に実装することになる。
@@ -350,7 +412,7 @@ Files:
 
 
 <h3>更に調べる</h3>
-<h5 id="two-arguments">elementの2引数: elementが入力として扱うものはパケットとconfiguration string</h5>
+<h4 id="two-arguments">elementの2引数</h4>
 
 もう一つelementという概念の設計思想として指摘しておくべき点としては、elementは引数にあたるものを２種類取るということである。その２つとはパケットとconfiguration stringである。これは、コンフファイルを書く最終段階でも、後述する「新しいelementを作る過程」でも、常に2種類を意識する必要がある。全然違う性格を持つからである。
 
@@ -376,16 +438,16 @@ configuration stringは対応する.ccファイルの関数configure()の中で
 
 一方で、elementはoutput portsの数自体はいくつあっても良いのに、他のelementに渡す物体としてはパケットだけというのは面白い。configuration stringを（コンフファイルにおける）後続のelementに渡すようなことは基本的には行われていないのである。パケットはカスケードのように次々に後続のelementに渡されていく一方で、configuration stringはそのelementだけが参照できるデータである。このように、clickにおけるデータの受け渡しには設計上の特徴がある。
 
-<h5 id="click-detail">作者による内部詳細</h5>
+<h4 id="click-detail">作者による内部詳細</h4>
 
 
 <p><a href="http://www.read.cs.ucla.edu/click/clickunderhood">ここ</a>が恐らく一番詳しい。</p>
 
-<h5 id="miscellaneous">その他まだ未整理の話題</h5>
+<h4 id="miscellaneous">その他まだ未整理の話題</h4>
 
 
-<h5>（発展）複数element間でのデータの受け渡しについて</h5>
-
+<h5>（発展）複数element間でのデータの受け渡し</h5>
+<pre>
 　以上のデータ受け渡し構造に基づいて考えると、複数element間で「同一の制御用のデータ」を扱うにはconfiguration stringではなくパケット自体に付与するしかないという発想に至る。この「同一の制御用のデータ」のことをClickではcolorと呼んでいる。
 
 ただしcolorはバイト数に制限があるなど、elementより遥かに癖がある（形式上の制限が厳しい）ために、複数element間で大きな制御用データをやり取りしたい場合には自作elementを使うしかないと思われる。この点についてはまだ調査中である。
@@ -404,9 +466,9 @@ elementclass GatewayDevice {
 }
 
 のように$deviceが2回参照されている。
+</pre>
 
-
-<h5>configuration fileの作成方法について</h5>
+<h5>configuration fileの作成方法</h5>
 
 <pre>
 
@@ -438,17 +500,17 @@ elementsのページを飛ばし読みしながら、自分がルーターに付
 
 </pre>
 
-<h5>以上で紹介したelementsにもAPIにも出てこない関数やマクロ定数について</h5>
+<h5>以上で紹介したドキュメントに出てこない関数など</h5>
 <p>
 　click/ns/nsclick.ccで定義される引数なしのclick_random()がそれである。
 このような関数の定義元を探す場合、ソースコードにタグ付けするcscopeやctagsといったソフトを使うしかないと思われる。私はsublime text 3のctagsパッケージにずいぶん助けられている。</p>
 
 
 
-<h5> Clickの位置づけについて</h5>
+<h5> Clickの位置づけ</h5>
 <pre>
 
-　（まだまだ勉強中の身であるため認識が間違っている可能性が高い。よってこの項目の記述内容は容易に変動するだろう。）
+　（誤認の可能性が高い。よってこの項目の記述内容は容易に変動する。）
 　ClickはUnix系OSにおけるネットワーク系コマンド群をKohler氏の思想によってまとめ上げ、機能を追加し、さらに拡張可能にした巨大なプログラムである。
 
 その複雑化の制御の過程で単に標準入力のコマンドのような設定項目の羅列や項目の羅列である設定ファイルではなく、DSLのような特性が生じた。
@@ -462,7 +524,7 @@ STLの標準ライブラリを取り込むことも可能であるし、たと�
 実際、Clickのどれかのelementはiptablesコマンドをそのまま呼び出しているらしい。
 </pre>
 
-<h3>オマケ：　C++知識チェックリスト</h3>
+<h3>作り中：　C++知識チェックリスト</h3>
 
 以下の知識があると望ましい。
 <ol>
@@ -493,8 +555,11 @@ if (Args(conf, this, errh)
 
 <h4>その他</h4>
 
-誤植や誤解などありましたら<a href="https://github.com/caprice-j/click_tutorial_in_Japanese">github</a>へお願いします
-
+<ul>
+<li>誤植や誤解などありましたら<a href="https://github.com/caprice-j/click_tutorial_in_Japanese">github</a>へお願いします</li>
+<li>製作 2014/03/24 -</li>
+</ul>
+</div><!-- div class == tocChild -->
 </div><!-- div id == right_frame -->
 <!-- 2014/04/02 目次をフレーム化するためにhtml化 -->
 </body></html>
