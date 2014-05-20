@@ -213,17 +213,17 @@ ol{padding-left: 20px;}
 
 <h3 id="install-click">インストールする</h3>
 
-<p>前提としてgit, make, g++がインストールされているとする。</p>
+<p>前提としてgit, make, g++がインストールされているとする。g++はclangなどでも動くはずである。</p>
 <pre class="console">
 git clone https://github.com/kohler/click.git
-cd click
+cd click   # change directory
 ./configure --disable-linuxmodule --enable-local
-make
+make # sudoが必要なこともある
 sudo make install 
 </pre>
 
 <p>以上でインストールは終了である。</p>
-<p>--disable-linuxmoduleは確か無いとインストールが失敗するはず。　--enable-localについては無くても上記のsudo make installまでは成功するが、<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">ここ</a>に記載があるように、のちのち自作機能を追加する際に必要である。オンにしておいたほうが無難だろう。この2つの詳細は
+<p>--disable-linuxmoduleは無いとインストールが失敗するLinuxのディストリビューションがある。成功するのであれば付けなくても構わない。　--enable-localについては無くても上記のsudo make installまでは成功するが、<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">ここ</a>に記載があるように、のちのち自作機能を追加する際に必要である。オンにしておいたほうが無難である。この2つの詳細は
 <pre class="console">
 ./configure --help
 </pre>
@@ -388,6 +388,8 @@ push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput p
 
 <p>以上を踏まえて、click/elements/nullelement.ccを参考に作ろう。</p>
 
+<p>更に詳しい情報は、<a href="http://www.read.cs.ucla.edu/click/doxygen/class_element.html">こちら</a>にまとまっている。</p>
+
 
 <h4 id="api-element">内部APIを用いるelement</h4>
 
@@ -410,6 +412,27 @@ Files:
 
 <p>書き途中</p>
 
+<h4>elements/local/以外の場所に自作エレメントを作る</h4>
+<p>click/etc/samplepackage/READMEにあるが、コマンドの実行順序が読み取れない。不完全だが、以下までは把握した。</p>
+
+<p>なお、<strong>事前にclick/etc/samplepackage以下のファイルを新規フォルダにコピーしておく</strong>とよい。</p>
+
+<pre class="console">
+pwd                # ->  ~/click/etc/samplepackage    
+ls                 # ->  configure.ac   Makefile.in   README   sampleelt.cc   sampleelt.hh   test.click
+
+autoconf           # -> configure.acに基づき、configureコマンドが作成される。
+./configure        # -> Makefile.inに基づき、Makefileファイルが作成される。
+make elemlist      # -> .ccファイル内のEXPORT_ELEMENTなどから　sample-{k,m}elements.conf　と　sample-uelem.mkが作成される。
+make               # -> sample.koなど大量のオブジェクトファイルが作成される。
+sudo make install  # -> sample.uoなどが無事に/usr/bin/以下あたりにインストールされる。これによって初めて以下のコマンドが成功する。
+click test.click   # -> test.click: 3: While initializing 'test :: SamplePackageElement':
+                     　　　Successfully linked with package!
+</pre>
+
+<h4>独自の.oファイルを利用する</h4>
+
+<p>configure.in内のEXTRA_DRIVER_OBJSをセットしよう。ただし、samplepackageのように別パッケージで作った場合、sudo makeは成功しても.clickファイルの実行時にundefined symbolエラーとなる。elements/local以下に置いた場合に.clickの実行まで含めて成功することは確認した。</p>
 
 <h3>更に調べる</h3>
 <h4 id="two-arguments">elementの2引数</h4>
@@ -437,6 +460,56 @@ configuration stringは対応する.ccファイルの関数configure()の中で
 
 
 一方で、elementはoutput portsの数自体はいくつあっても良いのに、他のelementに渡す物体としてはパケットだけというのは面白い。configuration stringを（コンフファイルにおける）後続のelementに渡すようなことは基本的には行われていないのである。パケットはカスケードのように次々に後続のelementに渡されていく一方で、configuration stringはそのelementだけが参照できるデータである。このように、clickにおけるデータの受け渡しには設計上の特徴がある。
+
+<h4>StringクラスとStringAccumクラスの使い方を読んで学ぶ</h4>
+
+<p>StringAccumは、Click内部で文字列の連結をかんたんに行うためのクラスである。</p>
+<p>StringAccumクラスを学ぶのに最適なソースコードはズバリelements/userlevel/kernelfilter.cc内のdevice_filter()である。</p>
+<p>この関数は、実はこれまでずっと使ってきたFromDevice.uエレメント(ユーザーレベルのFromDevice)エレメントのSNIFFERというオプションをfalseにした際に呼び出される。まず、<a href="http://www.read.cs.ucla.edu/click/elements/fromdevice.u#description">FromDevice.uエレメントのSNIFFERオプションの説明</a>を読んでみよう。</p>
+
+<p>
+
+SNIFFER<br>
+    Boolean. Specifies whether FromDevice should run in sniffer mode. In non-sniffer mode, FromDevice installs KernelFilter filtering rules to block the kernel from handling any packets arriving on device DEVNAME. Default is true (sniffer mode). <br>
+(大意：<br>
+SNIFFER<br>
+　　FromDevice(eth0, SNIFFER true) もしくは FromDevice(eth0, SNIFFER false)<br> のように使う。デフォルトはtrue。falseにすると、.clickファイルを動かしたときに自動的にKernelFilterエレメントのメソッドが呼び出され、eth0に届いた全てのパケットをLinuxカーネルが扱うことを防ぐ。)
+
+</p>
+
+<p>要するに、FromDeviceエレメントのオプションとして、KernelFilterエレメントの一部機能が転用されている。この呼び出される「KernelFilterエレメントのメソッド」が上述のKernelFilter::device_filter()である。今度は、KernelFilterエレメントの説明を読んでみよう。</p>
+
+<p>
+  DESCRIPTION<br><br>
+
+The KernelFilter element installs filter rules in the kernel to stop the kernel from handling certain types of packets. Use this in combination with FromDevice.u to handle packets in user-level Click configurations. KernelFilter uses iptables(1) to install filters; if your system does not support iptables(1), KernelFilter will fail. Normally KernelFilter uses either /sbin/iptables or /usr/sbin/iptables. To override this use the IPTABLES_COMMAND keyword argument. KernelFilter uninstalls its firewall rules when Click shuts down. If Click shuts down uncleanly, for instance because of a segmentation fault or 'kill -9', then the rules will remain in place, and you'll have to remove them yourself.
+<br><br>
+(大意:<br>
+　KernelFilterエレメントは単にLinuxでファイヤーウォールを設定する際に使われる iptables コマンドのラッパーである。/sbin/iptables もしくは /usr/sbin/iptables にあるiptablesを、execl()システムコールで実行しているだけである。その２箇所のどちらにもない場合はもちろんエラーとなる。
+<br><br>
+　KernelFilterによる呼出でインストールされたファイヤーウォールのフィルタリングルールすなわち<br>
+  "/sbin/iptables -A INPUT -i eth0 -j DROP"  (append a rule)<br>
+  などは、ClickのプログラムをCtrl - Cなどで終了させた際に<br>
+  "/sbin/iptables -D INPUT -i eth0 -j DROP"  (drop a rule)<br>
+  が自動的に呼ばれて消去される。ただしsegmentation faultなどで落ちた場合は残り続けるので注意。<br>
+  上のコマンドを見て分かるように、残ってしまうとeth0に届いたパケットは全て捨てられてしまうので、何も通信ができない。
+<br>
+</p>
+
+<p>この「Clickが動いている時だけ適用されるフィルタリングルール」については、例えば以下のように確認ができる。</p>
+　
+<img src="img/view_iptables.png" alt="">
+
+<p>Clickで作ったルーターがバックグラウンド(&)で動いている間だけ、DROP all -- anywhere anywhere なるとても強いフィルタリングルールが適用されていることが分かる。</p>
+
+<p>さて、ここまで理解した上でKernelFilter::device_filter()を見てみると、内容は一目瞭然である。StringAccumのインスタンスに対して、"/sbin/iptables" か "/usr/sbin/iptables"のどちらかの文字列を<<演算子で読み込んで、その後ろに引数を読み込んで、上述のiptablesの実行コマンド文字列を用意しているだけである。この関数のソースコードからは、以下のことが学べる。</p>
+
+<ol>
+  <li>StringAccumクラスは&lt;&lt;演算子で文字列を連結できる。</li>
+  <li>StringAccum::take_string()関数で(Click独自の)Stringクラスに変換できる。</li>
+  <li>String.c_str()でchar *に変換できる。すなわちexecl()などのシステムコールに渡せる形にやっとここでなる。</li>
+</ol>
+
 
 <h4 id="click-detail">作者による内部詳細</h4>
 
@@ -505,7 +578,20 @@ elementsのページを飛ばし読みしながら、自分がルーターに付
 　click/ns/nsclick.ccで定義される引数なしのclick_random()がそれである。
 このような関数の定義元を探す場合、ソースコードにタグ付けするcscopeやctagsといったソフトを使うしかないと思われる。私はsublime text 3のctagsパッケージにずいぶん助けられている。</p>
 
+<h5>オフラインでドキュメントを読む</h5>
+<p>[Mac OS Xの場合]</p>
+<pre class="console">
+  brew install doxygen     # doxygenを何らかの方法でインストール
+  cd (Clickのrootディレクトリ)/doc
+  doxygen -u               # obsoleteになった設定事項を消去。必要ないかもしれない。
+  doxygen                  # ドキュメントをhtmlで生成
+  open html/index.html     # できあがったhtml/index.htmlから閲覧する
+</pre>
 
+<p>手元の環境では、(Clickのrootディレクトリ)/doc/Doxyfile内で、
+<li>変数DOC_FONTNAME（使われるフォント）を変更</li><li>変数INPUTのパスを全て１階層上に変更(ドキュメントを含むソースコードが存在するフォルダ一覧。)<br>　たとえば、include/click ならば ../include/clickにする。</p>
+
+<p>以上を行うと環境によっては Check your TeX installation! という大量のエラーが表示されるが、.htmlのドキュメントファイルについては正常に生成される。ドキュメントのpdf化については個々人で対応されたい。</p>
 
 <h5> Clickの位置づけ</h5>
 <pre>
@@ -523,6 +609,7 @@ Clickは今まで述べてきたようにelements間については厳格な形�
 STLの標準ライブラリを取り込むことも可能であるし、たとえばnetstatの機能を内部に追加するなども(更に高度になるが)可能である。
 実際、Clickのどれかのelementはiptablesコマンドをそのまま呼び出しているらしい。
 </pre>
+
 
 <h3>作り中：　C++知識チェックリスト</h3>
 
@@ -550,8 +637,16 @@ if (Args(conf, this, errh)
   return -1;  
 </pre>
 
-　を見て、「詳細は分からないが引数を任意の数だけパースできそうだ」「コンパイル時に可能なオプションが増減する場合があるようだ」と読める。</li>
+　を見て、「詳細は分からないが引数を任意の数だけパースできそうだ」「コンパイル時に可能なオプションが増減する場合があるようだ」と読める。詳細は<a href="http://read.cs.ucla.edu/click/doxygen/class_args.html#_details">Argsクラスのドキュメント</a>に書いてある。</li>
 </ol>
+
+<h3>リンク</h3>
+<ul>
+  <li><a href="http://www.gnu.org/software/make/manual/make.html">GNU makeの公式マニュアル</a> ... Clickを学んでいてmakeについて疑問が生じたら、このマニュアルかAndrew Oramの『make 改訂版』を参照することを推奨する。makeはググって情報を探すことに向いていない。</li>
+  <li></li>
+  <li></li>
+</ul>
+
 
 <h4>その他</h4>
 
