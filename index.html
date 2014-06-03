@@ -9,7 +9,7 @@
 jQuery(function(){
     // h3～H5タグから目次を生成 (h1は文章タイトル。h2は目次タイトル。h6はh5と同様の修飾をするが、目次には書かないもの。)
     var idcount = 1;   
-    var toc = '<h2>ClickTutorial目次</h2>';
+    var toc = '<h2 id="toc_index_title">目次</h2>';
     var currentlevel = 0;
     jQuery(".tocChild :header",this).each(function(){
         this.id = "toc_" + idcount;
@@ -25,7 +25,7 @@ jQuery(function(){
             return true; // continue
         }
         while(currentlevel <level) {
-            toc += "<ol>";
+            toc += currentlevel == 0 ? '<ol class="chapter">' : "<ol>";
             currentlevel++;
         }
         while(currentlevel> level) {
@@ -44,105 +44,9 @@ jQuery(function(){
 });
 
 </script>
-<style>
-/* 目次部分 */
-#table-of-contents-div {
-    border: 1px solid #AAA;
-    background-color: #F9F9F9;
-    padding: 5px;
-    font-size: 95%;
-    width: 70%;
-}
-#table-of-contents-div h2 {
-    margin-left:10px;
-    font-size: 100%;
-    font-weight: bold;
-    color: #666666;
-}
-#table-of-contents-div ol{
-    list-style-type: none;
-    margin: 6px 0 6px 2em; 
-}
-a.toclink {
-    font-family: "ＭＳ Ｐゴシック", Osaka, "ヒラギノ角ゴ Pro W3", sans-serif;
-    text-decoration: underline;
-    font-size: 50%;
-    font-weight: normal;
-}
+<link rel="stylesheet" type="text/css" href="css/bootstrap-2.3.2.css">
+<link rel="stylesheet" type="text/css" href="css/basic.css">
 
-/* 目次部分ここまで*/
-
-body {
-	color: #000;
-	font-family: Verdana,Arial,'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック','MS PGothic',sans-serif;
-	font-size: 14px;
-	font-weight: normal;
-	letter-spacing: 0;
-	line-height: 1.3;
-	margin:0;
-	_overflow:hidden;
-	padding:0;
-}
-#left_frame {
-	color: #000;
-	background-color: #fff;
-	border-color: #ccc;
-	border-right: 3px;
-	border-style: solid;
-	left:0;
-	height:100%;
-	margin:0;
-	padding:0;
-	position:fixed;
-	_position:absolute;
-	top:0;
-	width:250px;
-}
-#right_frame {
-	margin:0 0 0 260px;
-	padding:0;
-	height:100%;
-	_overflow:auto;
-}
-.note{ /* spanタグのtitle属性に豆知識を書く。マウスオーバーすると読める。 */
-  
-}
-#footnote-container{
-	margin: 0px 10px;
-	padding: 5px;
-	border-color: #fff;
-	border: 1px;
-	border-style: solid;
-}
-p#footnote-contents{
-
-}
-sup{
-	color: #39F;
-	font-size: 1.3rem;
-	cursor: pointer;
-}
-a:visited{
-
-}
-
-	.console{
-	background-color: #262626;
-	color: #EEF;
-	padding-left: 5px;
-	font-family: consolas;
-
-	}.console:before{content:""; color:#FF0;}
-
-h3{
-	counter-increment: number;
-  text-decoration: underline;
-	}h3:before{font-size: 1.5rem; content : "" counter(number) ". ";}
-
-ul{padding-left: 20px;}
-ol{padding-left: 20px;}
-
-</style>
 <style type="text/css"></style></head>
 
 <script>
@@ -160,6 +64,8 @@ ol{padding-left: 20px;}
 <body>
 
 <div id="left_frame">
+<div id="manualIndexExpandButton">-></div>
+
   <div id="table-of-contents-div">
     <!-- <p> 目次</p> -->
    <!--  <ol>
@@ -205,9 +111,9 @@ ol{padding-left: 20px;}
 <h3 id="what-is-click">clickとは</h3>
 
 <ul>
-  <li>ルーターの機能を記述するためのC++の巨大なライブラリである。C++	の上で作られた言語とも言える。</li>
-  <li>Unix系OS(Linux, Mac OS X, Android)上で動く。</li>
-  <li>拡張可能であり、C++の知識がかなり必要とされる。</li>
+  <li>ルーターの機能を記述するためのC++の巨大なライブラリである。</li>
+  <li>Unix系OS(Linux, Android。Mac OS Xでも一部動く)上で動く。</li>
+  <li>拡張する（ライブラリ内に無い、自分の欲しい機能を作る）場合にはC++の知識がかなり必要とされる。</li>
   <li><a href="http://read.cs.ucla.edu/click/">公式サイト</a>では大文字でClickと表記されているが、編集容易なため以下ではclickと表記することがある。</li>
 </ul>
 
@@ -216,20 +122,77 @@ ol{padding-left: 20px;}
 <p>前提としてgit, make, g++がインストールされているとする。g++はclangなどでも動くはずである。</p>
 <pre class="console">
 git clone https://github.com/kohler/click.git
-cd click   # change directory
+cd click            # change directory
 ./configure --disable-linuxmodule --enable-local
-make # sudoが必要なこともある
-sudo make install 
+make                # ./userlevel以下にClickのバイナリを作る
+sudo make install   # 作られたバイナリを適切な場所へ移動(install)させる（下注１）
 </pre>
 
+<ol>（注１）
+  <li>PATH(端末からコマンドを入力したときに探す場所)に含まれる/usr/local/binにはClickの実行バイナリ</li>
+  <li>/usr/local/libにはlibclick.aなどの静的ライブラリ</li>
+  <li>/usr/share/include(g++がインクルード指定のファイルを探し始める場所)にはヘッダファイル</li>
+</ol>
+<p>がインストールされる。</p>
+
+
 <p>以上でインストールは終了である。</p>
-<p>--disable-linuxmoduleは無いとインストールが失敗するLinuxのディストリビューションがある。成功するのであれば付けなくても構わない。　--enable-localについては無くても上記のsudo make installまでは成功するが、<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">ここ</a>に記載があるように、のちのち自作機能を追加する際に必要である。オンにしておいたほうが無難である。この2つの詳細は
+<p>--disable-linuxmoduleは付けなくても成功すれば構わない。無いとインストールが失敗するLinuxのディストリビューションがある。また当然ながらMac OS上では無いと必ず以下のように失敗する。</p>
+
+<pre>
+configure: error:
+=========================================
+
+Can't find /usr/src/linux, so I can't compile the linuxmodule driver!
+(You may need the --with-linux=DIR option.)
+
+=========================================
+</pre>
+
+<p>　--enable-localについては無くても上記のsudo make installまでは成功するが、<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">公式FAQ</a>に記載があるように、のちのち自作機能を追加する際に必要である。オンにしておいたほうが無難である。この2つの詳細は
 <pre class="console">
 ./configure --help
 </pre>
 
 	を参照されたい。
 </p>
+<h4>注意: --disable-linuxmoduleによって使えなくなるものがある</h4>
+
+<p>sudo make installによって/usr/local/bin以下にClickのバイナリがインストールされた。これでようやくClickによるソフトウェアルーター(正体は,大量の設定項目(Configuration String)が渡されたClickバイナリ内の_main関数...のはず)が起動できる...と行きたいところだが、上記のように--disable-linuxmoduleフラグを付けて./configureした場合、linuxmoduleというプログラム部分は/usr/local/以下にインストールされない。</p>
+<p>この状態で、例えばconf/udpcount.clickというルーター設定で動かしてみると、以下のエラーが表示される。</p>
+
+<pre>
+$sudo click conf/udpcount.click
+conf/udpcount.click:17: unknown element class 'PollDevice'
+conf/udpcount.click:19: unknown element class 'ToHost'
+</pre>
+
+<p>これから、PollDeviceとToHostというlinuxmoduleに含まれるエレメントがインストールされていないと分かる。</p>
+
+
+<pre>
+  
+</pre>
+
+<h4>VirtualBoxのマシンを複製する</h4>
+
+<p>ネットワークの実験では3台や4台のマシンが欲しくなることも多い。その際にOS、Wireshark、Clickなどを一台ずつ個別にセットするのは手間である。VirtualBoxでは、１台必要な環境を仮想ハードディスクにインストールしてしまえばその.vdiファイルを簡単に流用できる。</p>
+
+<p>単純にコピペして、VBoxManageのsethduuidでUUIDを変更するのでもよいが、clonevdiコマンドを用いれば1手間で済む。ただしHDDが使用中だと以下のエラーを出して失敗するため、Save the machine stateでもいいので、一度止めてから再実行する。</p>
+
+<pre>
+
+hst@pcname ~/click $ VBoxManage clonevdi "/Users/hst/VirtualBox VMs/vm3/server.vdi" "/Users/hst/VirtualBox VMs/vm4/clonedserver.vdi"
+VBoxManage: error: Failed to lock source media '/Users/hst/VirtualBox VMs/vm3/server.vdi'
+VBoxManage: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component Medium, interface IMedium, callee nsISupports
+VBoxManage: error: Context: "CloneTo(dstDisk, ComSafeArrayAsInParam(l_variants), NULL, progress.asOutParam())" at line 740 of file VBoxManageDisk.cpp
+
+</pre>
+
+<p></p>
+
+
+<h6></h6>
 
 
 <h3>試してみる</h3>
@@ -285,7 +248,12 @@ click conf/test.click
 Router could not be initialized!
 </pre>
 
-<p>というエラーメッセージが出て実行されない。この場合にはスペースが含められないと分かる。</p>
+<p>というエラーメッセージが出て実行されない。スペースが含められないと分かる。</p>
+<p>このような試行錯誤でもClickの作法は学べるが、いささか場当たり的である。より体系的な方法としては、該当するエレメントのmanを読むという手がある。</p>
+
+<pre class="console">man Print # printとすると、ヒットしない！大文字にすること</pre>
+
+<p>これで、PrintエレメントについてのClick公式側が用意した全ての説明を読むことができる。ただし実際に読んでみると、「テキスト(manの説明ではLABEL)にスペースが含められない」、さらに言えば「'(クォーテーション)または"(ダブルクォーテーション)で括れば書ける」という事実は明記されていない。このような暗黙の了解事項は、何度もルーターを少し変えては動かすことで学ぶのが一番早いだろう。</p>
 
 <h4 id="read-thesis">elementとその関連概念を知る</h4>
 
@@ -298,15 +266,16 @@ click testFile.click
 </pre>
 <p>のように標準入力からクリックのプログラムに渡して実行することで、内部に記された処理が実行される。</p>
 <p>よって「Clickでルーターを作る」と言った際、その最終段階はこの<br>
-「<strong>コンフファイルを作り（各処理ごとのConfiguration String(引数のようなもの)を）修正する</strong>」<br>
-ことだと言える。
+<strong>コンフィグファイルを作り、<br>各処理ごとのConfiguration String(引数)を修正する</strong>
+ことだと言える。ルーターを作る、という想像も付かないような作業を、必要最小限の場合としてこのレベルまで抽象化したことがClickの功績であろう。</p>
 
+<p>
 コンフファイルはより具体的には、elementと呼ばれる処理のまとまり（ふつうのプログラミング書籍でいうモジュールに相当する）を並べて作られる。FromDevice(eth0) -> Print(ok) -> ToDevice(eth0);という1行のコンフファイルであれば、FromDevice(eth0)とPrint(ok)とToDevice(eth0)の３つがelementである。
 </p>
 
 <h5>element</h5>
 
-<p>訳さずにelementのまま理解したほうが良いと思われる。作者の設計思想が如実に反映されており、日本語の「要素」にはない細かな形式的な制限がある。</p>
+<p>訳さずにelementのまま理解したほうが良いと思われる。「オブジェクト志向」を「物体志向」と訳さないのと同じ理由である。作者の設計思想が如実に反映されており、日本語の「要素」にはない細かな形式的な制限がある。</p>
 
 <p>input port, output port, configuration string, element classの4つで主に構成される。図解や制限は<a href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf">click作者の論文</a>のp.4にあるelementの図に任せる。</p>
 
@@ -316,7 +285,7 @@ click testFile.click
 
 <p>上記論文p.4のelementの図において、黒く塗りつぶされている三角・四角がpushのinput portとoutput portであり、そうでない三角・四角がpullのinput portとoutput portである。
 pushのinput portはpushのoutput portにしか繋げない。またpullのinput portはpullのoutput portにしか繋げない。
-絵で言えば、</p><p>■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されない</p><p>ということである（エラーが出て落ちる）。</p>
+絵で言えば、<strong>■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されない</strong>ということである（エラーが出て落ちる）。</p>
 <p>agnosticは後続するelementがpushならばpush, pullならばpullになる柔軟なelementである。実装するのが難しいのかもしれない。</p>
 
 <p>
@@ -368,25 +337,29 @@ PullNullElement::pull(int)
 
 
 <p>
-自作のelementを使う場合、configureの段階で--enable-localオプションを設定する必要がある。click/elements/local以外のディレクトリでも作る方法があるようだがまだ理解していない。
+自作のelementを使う場合、言っておかないと確実に誰もがハマって数時間を費やす注意点は
+<strong>./configureのときに--enable-localオプションをつけておく必要がある</strong>
+ということである。これをしておかないと以下でclick/elements/local以下に自作のelementを追加しても、sudo make installされたとき（clickが、その自作のelementを含めてプログラムを再構成するとき）にコンパイルされない。</p>
+<p>
 このチュートリアルでは<a href="#install-click">インストールする</a>の項目で既にそれに言及しているため問題はないだろうが、仮にそのオプションを指定していない場合は上記のURLの./configure --prefix=$HOMEを実行する前の作業から、設定をやり直す必要が生じる。</p>
 
-<p>これをしておかないと以下でclick/elements/local以下に自作のelementを追加しても、sudo make installされたとき（clickが、その自作のelementを含めてプログラムを再構成するとき）にコンパイルされない。</p>
+<p>click/elements/local以外のディレクトリでも作る方法を以下でも解説するが、まだ一部しか理解していない(EXTRA_DRIVER_OBJSのような、外部ライブラリを使う際に違いが生じるようである)。</p>
 
 
 <p>自作elementを追加したあとは、毎回
 <pre class="console">
-make elemlist      #「sudo make install」でコンパイルされるelementの一覧(click/elements.conf)を書き換えるコマンド。
-sudo make install  #elements.confに従って自作elementをコンパイルする。C++の文法ミスなどはここでエラーが出る。
-</pre>
-の2つのコマンドを実行する。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを実行できるようになる。
-（myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。）</p>
+#「sudo make install」でコンパイルされるelementの一覧(click/elements.conf)を書き換えるコマンド。
+make elemlist
+# elements.confに従って自作elementをコンパイルする。C++の文法ミスなどはここでエラーが出る。
+sudo make install</pre>
+の2つのコマンドを実行する(elements/local以下に追加した場合はsudo make elemlistしなくても良かった気が...未確認)。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを実行できるようになる。
+（myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。man 1 clickにあるようにCLICK_BACKTRACEをONにすると原因が掴めるかも？）</p>
 
 <p>新しいelementの作り方の手順自体は<a href="http://www.read.cs.ucla.edu/click/faq#creating-your-own-elements">FAQ</a>にまとまっている。
-class_name(), port_count()はほぼ確実に実装することになる。
+class_name(), port_count()は必ず実装する。
 push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput portを持つelementがそれぞれ実装する（３つのうち、どれか１つだけということである）。</p>
 
-<p>以上を踏まえて、click/elements/nullelement.ccを参考に作ろう。</p>
+<p>以上を踏まえて、click/elements/nullelement.ccを参考に作る。</p>
 
 <p>更に詳しい情報は、<a href="http://www.read.cs.ucla.edu/click/doxygen/class_element.html">こちら</a>にまとまっている。</p>
 
@@ -396,8 +369,8 @@ push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput p
 <p>新しいelementをClickで実装する際はAPIの理解が必須である。Clickは一般的なC++プログラマなら普通使うであろう「C++のSTLに含まれるStringなどの標準ライブラリクラス」を使わず、独自にそれらのStringクラスに相当するものをを実装し直して使うなどしており、呼び出す関数名や返ってくる戻り値などについてClick内部のソースコードを見ながら逐一確認する必要があるからだ。</p>
 
 <p>API（クラスとそのメンバ関数群）はhttp://read.cs.ucla.edu/click/doxygen/classes.html にまとまっている。
-実際には以下のタブを頻用することでAPIを探していく。</p>
-<pre>
+実際にはPacket.hhの説明を読んだ後、右上の虫眼鏡で検索したり、各タブを利用することでAPIを探していく。</p>
+<!-- <pre>
 Classes:
   Alphabetical List: 全クラスの一覧。名前だけで探したい時に使う。
   Class List:        全クラスの一覧に加え一行説明が読める。
@@ -406,7 +379,9 @@ Files:
   [code]:            ソースコードのうち.hhだけを一覧・閲覧できる。上述のClass Membersと共通の「対応する説明」へ飛べる。
 
   「対応する説明」とは、各関数の戻り値や引数、型情報など実際のソースコードレベルの情報である。
-</pre>
+</pre> -->
+
+<p>なおこのAPIドキュメントはオフライン閲覧もできる。後述する。</p>
 
 <h4 id="call-library">外部ライブラリを呼び出す</h4>
 
@@ -434,9 +409,42 @@ click test.click   # -> test.click: 3: While initializing 'test :: SamplePackage
 
 <p>configure.in内のEXTRA_DRIVER_OBJSをセットしよう。ただし、samplepackageのように別パッケージで作った場合、sudo makeは成功しても.clickファイルの実行時にundefined symbolエラーとなる。elements/local以下に置いた場合に.clickの実行まで含めて成功することは確認した。</p>
 
+<h4>ElementClassにより複雑なエレメントを作る（IPフォワーディングをするエレメントを作る）</h4>
+
+<p>「フォワーディング」とは、あるNICから入ってきたパケットを別のNICから送信する動作のことだ。主としてルータが行ない、特にIPパケットの場合はIPフォワーディングと呼称される。</p>
+
+<p>Linux環境では、/proc/sys/net/ipv4/ip_forwardの値を1にすると、自動的にIPフォワーディングの機能が有効になる(echo 1 > /proc/sys/net/ipv4/ip_forwardとすればよい。元に戻すにはecho 0 > /proc/sys/net/ipv4/ip_forwardとすればよい。)。これにおよそ相当する動作を、Clickのエレメントで実装してみると以下のようになる。</p>
+
+<pre class="console">
+elementclass MacRewriter{ $src, $dst |
+  input                              // assume with ethernet header
+  -> Print(____________BEFORE_REWRITING____________, MAXLENGTH 100)
+  -> Strip(14)                       // remove ether header
+  -> EtherEncap(0x0800, $src, $dst)  // attach new ether header
+  -> Print([$src]->[$dst], MAXLENGTH 100)
+  -> output
+}
+
+FromDevice(eth0)
+-> MacRewriter(33:33:33:33:33:33 /*src*/, 44:44:44:44:44:44 /*dst*/)
+-> Queue -> ToDevice(eth1);
+
+// backward
+FromDevice(eth1)
+-> MacRewriter(22:22:22:22:22:22, 11:11:11:11:11:11)
+-> Queue -> ToDevice(eth0);
+</pre>
+
+<img src="img/ip_forwarding.png" alt="">
+
+<p>上図のような状況で、Machine2上で上記のClickソフトウェアルーターをClickコマンドで起動した場合、10.0.0.1/8と11.0.0.2/8という異なるネットワーク間でのホストでデータのやりとりができる。Machine1からpingが通るかping 11.0.0.2/8をして試してみよう。もっともこの場合、隣り合うマシンのMACアドレスを知っていなければならず、あまり現実的ではない（？）。</p>
+
+<p>なおVirtualBoxを使っている場合はVboxManageのclonevdiコマンドを用いれば、複数台のVMの用意が楽になると思われる。</p>
+
 <h3>更に調べる</h3>
 <h4 id="two-arguments">elementの2引数</h4>
 
+<pre>
 もう一つelementという概念の設計思想として指摘しておくべき点としては、elementは引数にあたるものを２種類取るということである。その２つとはパケットとconfiguration stringである。これは、コンフファイルを書く最終段階でも、後述する「新しいelementを作る過程」でも、常に2種類を意識する必要がある。全然違う性格を持つからである。
 
 【コンフファイルを書く最終段階において】
@@ -460,6 +468,9 @@ configuration stringは対応する.ccファイルの関数configure()の中で
 
 
 一方で、elementはoutput portsの数自体はいくつあっても良いのに、他のelementに渡す物体としてはパケットだけというのは面白い。configuration stringを（コンフファイルにおける）後続のelementに渡すようなことは基本的には行われていないのである。パケットはカスケードのように次々に後続のelementに渡されていく一方で、configuration stringはそのelementだけが参照できるデータである。このように、clickにおけるデータの受け渡しには設計上の特徴がある。
+
+</pre>
+
 
 <h4>StringクラスとStringAccumクラスの使い方を読んで学ぶ</h4>
 
@@ -576,9 +587,12 @@ elementsのページを飛ばし読みしながら、自分がルーターに付
 <h5>以上で紹介したドキュメントに出てこない関数など</h5>
 <p>
 　click/ns/nsclick.ccで定義される引数なしのclick_random()がそれである。
-このような関数の定義元を探す場合、ソースコードにタグ付けするcscopeやctagsといったソフトを使うしかないと思われる。私はsublime text 3のctagsパッケージにずいぶん助けられている。</p>
+このような関数の定義元を探す場合、ソースコードにタグ付けするcscopeや<a href="http://ctags.sourceforge.net/">ctags</a>といったソフトを使うしかないと思われる。私はsublime text 3のctagsパッケージにずいぶん助けられている。</p>
+<h5>オフラインでエレメントのドキュメントを読む</h5>
+<p>man FromDeviceなどとすると読める。</p>
+<p>なお、Linuxのネットワークコマンド（tcpdumpなど）がクリックのどこで使われているかを知るには、apropos tcpdumpなどとすると一覧できて便利かと思われる。</p>
 
-<h5>オフラインでドキュメントを読む</h5>
+<h5>オフラインでAPIドキュメントを読む</h5>
 <p>[Mac OS Xの場合]</p>
 <pre class="console">
   brew install doxygen     # doxygenを何らかの方法でインストール
@@ -593,6 +607,11 @@ elementsのページを飛ばし読みしながら、自分がルーターに付
 
 <p>以上を行うと環境によっては Check your TeX installation! という大量のエラーが表示されるが、.htmlのドキュメントファイルについては正常に生成される。ドキュメントのpdf化については個々人で対応されたい。</p>
 
+<h5>その他まだ未定</h5>
+<ol>
+  <li>click(1)にチラっと書いてあるCLICK_BACKTRACE怪しい これをONにすればエラー特定に役立つのではないか？</li>
+  <li>click(5)が有用っぽいことかいてる</li>
+  </ol>
 <h5> Clickの位置づけ</h5>
 <pre>
 
@@ -607,13 +626,13 @@ Kohler氏の研究興味分野にプログラミング言語が入っている�
 
 Clickは今まで述べてきたようにelements間については厳格な形式制限があるが、ソースコードのレベルにおいては様々なライブラリを柔軟に取り込むことができる。
 STLの標準ライブラリを取り込むことも可能であるし、たとえばnetstatの機能を内部に追加するなども(更に高度になるが)可能である。
-実際、Clickのどれかのelementはiptablesコマンドをそのまま呼び出しているらしい。
+実際、ClickのKernelFilterエレメントはiptablesコマンドをそのまま呼び出している。
 </pre>
 
 
 <h3>作り中：　C++知識チェックリスト</h3>
 
-以下の知識があると望ましい。
+以下の知識があると望ましい。 -> 以下は参考文献を表す。
 <ol>
 <li> CLICK_ENDDECLSという大文字を見て「マクロだから置換されるな」と直感が湧く。</li>
 <li> Print::simple_action(Packet *p)を見て、「Printクラスのメンバ関数simple_actionがPacketクラスのインスタンスのポインタをpという識別子で受け取っている」と読める。</li>
@@ -621,9 +640,9 @@ STLの標準ライブラリを取り込むことも可能であるし、たと�
 <li> uint32_tを見てunsigned int 32 bitsあたりの略でおよそ0~40億ぐらいの値を返すと分かる。</li>
 <li> return (bc < 0 ? b : (compar(a, c, thunk) < 0 ? c : a));を見て「返り値は3種類だな」と読める。</li>
 <li> click_chatter("rtti_user\n");を見たときに\nから「文字出力関数だ」と直感できる。</li>
-<li> inline関数は.hhと.ccのどちらのファイルに含めるべきかがリンケージを理由として説明できると分かる。</li>
+<li> inline関数は.hhと.ccのどちらのファイルに含めるべきかがリンケージを理由として説明できる。</li>
 <li> extern "C" を見ると背筋がビクッとする。</li>
-<li> const変数とconstメンバ関数はかなり違うと実感している（後者は全てのメンバ変数をconstにする）。  </li>
+<li> const変数とconstメンバ関数はかなり違うとの実感がある（後者はメンバ変数を変更しないことを表す）。  </li>
 <li>以下の 
 <pre>
 
@@ -638,13 +657,14 @@ if (Args(conf, this, errh)
 </pre>
 
 　を見て、「詳細は分からないが引数を任意の数だけパースできそうだ」「コンパイル時に可能なオプションが増減する場合があるようだ」と読める。詳細は<a href="http://read.cs.ucla.edu/click/doxygen/class_args.html#_details">Argsクラスのドキュメント</a>に書いてある。</li>
+<li> -> </li>
 </ol>
 
 <h3>リンク</h3>
 <ul>
   <li><a href="http://www.gnu.org/software/make/manual/make.html">GNU makeの公式マニュアル</a> ... Clickを学んでいてmakeについて疑問が生じたら、このマニュアルかAndrew Oramの『make 改訂版』を参照することを推奨する。makeはググって情報を探すことに向いていない。</li>
-  <li></li>
-  <li></li>
+  <li><a href="http://www.read.cs.ucla.edu/click/faq#how-do-i-search-the-click-mailing-list-archives">Clickについて更に突っ込んだ質問をする場合</a> このFAQにあるように、ClickのMailing ListのArchiveを検索しよう。</li>
+<!--   <li>const char* p, char* const p, const char * const pの違いが分かる。 -> 『Effective C++』 第3項</li> -->
 </ul>
 
 
@@ -653,6 +673,8 @@ if (Args(conf, this, errh)
 <ul>
 <li>誤植や誤解などありましたら<a href="https://github.com/caprice-j/click_tutorial_in_Japanese">github</a>へお願いします</li>
 <li>製作 2014/03/24 -</li>
+<li>20140530  IP forwardingの項を追加</li>
+<li>20140603  FAQの存在を発見、リンクに追加</li>
 </ul>
 </div><!-- div class == tocChild -->
 </div><!-- div id == right_frame -->
