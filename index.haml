@@ -145,7 +145,7 @@
         %strong ■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されない
         ということである（エラーが出て落ちる）。agnosticは後続するelementがpushならばpush, pullならばpullになる柔軟なelementである。一般的な訳は「不可知論者」である。実装するのが難しそうな気がする。
 
-      %p このpushとpullがC++上でどのように実現されているかはclick/elements/nullelement.ccを見ると掴めるかもしれない?
+      %p このpushとpullがC++上でどのように実現されているかはclick/elements/standard/nullelement.ccを見ると掴めるかもしれない?
       %pre.console
         void
         PushNullElement::push(int, Packet *p)
@@ -197,7 +197,7 @@
         以上に書いたような「新しいelementの作り方」の概要は
         %a{href:"http://www.read.cs.ucla.edu/click/faq#creating-your-own-elements"} FAQ
         にまとまっている。
-      %p class_name(), port_count()は必ず実装する。push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput portを持つelementがそれぞれ実装する（３つのうち、どれか１つだけということである）。以上を踏まえて、click/elements/nullelement.ccを参考に作る。
+      %p class_name(), port_count()は必ず実装する。push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput portを持つelementがそれぞれ実装する（３つのうち、どれか１つだけということである）。以上を踏まえて、click/elements/standard/nullelement.ccを参考に作る。
       %p 
         更に詳しい情報は、
         %a{href:"http://www.read.cs.ucla.edu/click/doxygen/class_element.html"} こちら
@@ -416,6 +416,7 @@
         %li 20140530  IP forwardingの項を追加
         %li 20140603  FAQの存在を発見、リンクに追加
         %li 20140604  Haml, Scssで全て書き直した
+        %li 20140605  指摘を受けて修正　誤：element/nullelement.cc 　正： element/standard/nullelement.cc
     -# 機能案
     -# よくありがちなミスは！マークをクリックするとpopoverで見れる
     -# 分からない用語は自動でマウスクリックポップアップがつく（スマホ用）

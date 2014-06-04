@@ -128,7 +128,7 @@
         <strong>■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されない</strong>
         ということである（エラーが出て落ちる）。agnosticは後続するelementがpushならばpush, pullならばpullになる柔軟なelementである。一般的な訳は「不可知論者」である。実装するのが難しそうな気がする。
       </p>
-      <p>このpushとpullがC++上でどのように実現されているかはclick/elements/nullelement.ccを見ると掴めるかもしれない?</p>
+      <p>このpushとpullがC++上でどのように実現されているかはclick/elements/standard/nullelement.ccを見ると掴めるかもしれない?</p>
       <pre class='console'>void
       PushNullElement::push(int, Packet *p)
       {
@@ -177,7 +177,7 @@
         <a href='http://www.read.cs.ucla.edu/click/faq#creating-your-own-elements'>FAQ</a>
         にまとまっている。
       </p>
-      <p>class_name(), port_count()は必ず実装する。push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput portを持つelementがそれぞれ実装する（３つのうち、どれか１つだけということである）。以上を踏まえて、click/elements/nullelement.ccを参考に作る。</p>
+      <p>class_name(), port_count()は必ず実装する。push(), pull(), simple_action()はそれぞれ、push, pull, agnosticなoutput portを持つelementがそれぞれ実装する（３つのうち、どれか１つだけということである）。以上を踏まえて、click/elements/standard/nullelement.ccを参考に作る。</p>
       <p>
         更に詳しい情報は、
         <a href='http://www.read.cs.ucla.edu/click/doxygen/class_element.html'>こちら</a>
@@ -368,6 +368,7 @@
         <li>20140530  IP forwardingの項を追加</li>
         <li>20140603  FAQの存在を発見、リンクに追加</li>
         <li>20140604  Haml, Scssで全て書き直した</li>
+        <li>20140605  指摘を受けて修正　誤：element/nullelement.cc 　正： element/standard/nullelement.cc</li>
       </ul>
     </div>
     <style>
@@ -380,7 +381,7 @@
     </script>
     &lt;div class=&quot;escaped&quot;&gt;&lt;/div&gt;
     <p>total is 500</p>
-    <p>2014-06-04 00:35:01 +0900</p>
+    <p>2014-06-04 12:48:23 +0900</p>
     <p>5</p>
     <p>1</p>
     <p>2</p>
