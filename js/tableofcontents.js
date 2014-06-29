@@ -4,8 +4,13 @@ jQuery(function(){
     var toc = '<h2 id="toc_index_title">目次</h2>';
     var currentlevel = 0;
     jQuery(".tocChild :header",this).each(function(){
-        this.id = "toc_" + idcount;
-        idcount++;
+        console.log(this.id);
+        if( this.id !== '' ){
+
+        }else{
+          this.id = "toc_" + idcount;
+          idcount++;
+        }
         var level = 0;
         if(this.nodeName.toLowerCase() == "h3") {
             level = 1;

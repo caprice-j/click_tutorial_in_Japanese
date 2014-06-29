@@ -40,6 +40,22 @@ $toc_list_indent: 0px;
             position: inside;
         }
     }
+    ol{
+        ol{
+            ol{
+                li{
+                    display: inline;
+                    margin:{
+                        top: 0px;
+                        bottom: 0px;
+                    }
+                    &:after{
+                        font-size: 1.0rem; content : ", ";
+                    }
+                }
+            }
+        }
+    }
 }
 ul{padding-left: 20px;}
 a{
