@@ -2,9 +2,9 @@ doctype html
 haml lang="ja"
   head
     meta charset="UTF-8"
-    link rel="stylesheet" href="css/basic.css"
-    link rel="stylesheet" href="jquery.tocify.css"
     link rel="stylesheet" href="css/bootstrap-2.3.2.css"
+    link rel="stylesheet" href="jquery.tocify.css"
+    link rel="stylesheet" href="css/basic.css"
     script(src="js/jquery-2.1.0.js")
     script(src="js/jquery-ui-1.10.4.custom.js")
     / script(src="js/jquery.tocify.js")
@@ -77,9 +77,11 @@ haml lang="ja"
           NAT　　　　　　　O　　　　　　　　O　　　　　　　？
           Host-only        X             O            O
           Internal         X             X            O
+      p VMにOSをインストールしたあとは、以下のように、同じマシンに対して複数のネットワーク設定を作ってしまうことを推奨する。ひとつはHost-OnlyかInternalで実験用、もう一つはNATにしておいてパッケージをインストールするときなどに使う。
+      img(src="img/2VM_network_settings.png")
       h4 VirtualBoxのマシンを複製する
       p ネットワークの実験では3台や4台のマシンが欲しくなることも多い。その際にOS、Wireshark、Clickなどを一台ずつ個別にセットするのは手間である。VirtualBoxでは、１台必要な環境を仮想ハードディスクにインストールしてしまえばその.vdiファイルを簡単に流用できる。
-      p 単純にコピペして、VBoxManageのsethduuidでUUIDを変更するのでもよいが、clonevdiコマンドを用いれば1手間で済む。ただしHDDが使用中だと以下のエラーを出して失敗するため、Save the machine stateでもいいので、一度止めてから再実行する。
+      p 単純にコピペして、VBoxManageのsethduuidコマンドでUUIDを変更するのでもよいが、clonevdiコマンドを用いれば1手間で済む(UUIDを変更する必要があったかも？未確認)。ただしHDDが使用中だと以下のエラーを出して失敗するため、Save the machine stateでもいいので、一度止めてから再実行する。
       pre.errorConsole
         | hst@pcname ~/click $ VBoxManage clonevdi "/Users/hst/VirtualBox VMs/vm3/server.vdi" "/Users/hst/VirtualBox VMs/vm4/clonedserver.vdi"
           VBoxManage: error: Failed to lock source media '/Users/hst/VirtualBox VMs/vm3/server.vdi'
@@ -287,6 +289,15 @@ haml lang="ja"
           sudo make install  # -> sample.uoなどが無事に/usr/bin/以下あたりにインストールされる。これによって初めて以下のコマンドが成功する。
           click test.click   # -> test.click: 3: While initializing 'test :: SamplePackageElement':
           Successfully linked with package!
+      p しかし、このようにパッケージとして自作エレメントのインストールを行った場合、プロファイリングコマンドgprofの結果(デフォルトではgprof /usr/local/bin/click gmon.out)に
+      strong パッケージ内のエレメントが現れない(gprofで計測ができない)
+      p ことに注意する。より正確には、Clickバイナリのインストール即ち
+      pre.console
+        | pwd # Clickフォルダのルート
+        ./configure CXXFLAGS="-pg" LDFLAGS="-pg" --disable-linuxmodule --enable-local
+        make
+      p の際に、このpgがどうやらパッケージ内でmakeをしたときには適用されない模様である。解決策は探せばあるだろうが、とりあえずパッケージ内のエレメントをelements/local以下に移してコンパイルすることでgprofの結果に自作エレメントの関数が現れるようになった。
+
       h4 独自の.oファイルを利用する
       p configure.in内のEXTRA_DRIVER_OBJSをセットしよう。ただし、samplepackageのように別パッケージで作った場合、sudo makeは成功しても.clickファイルの実行時にundefined symbolエラーとなる。elements/local以下に置いた場合に.clickの実行まで含めて成功することは確認した。
 
@@ -410,7 +421,7 @@ haml lang="ja"
         たとえば"global variable site:pdos.csail.mit.edu"で検索すると、
         a(href="http://pdos.csail.mit.edu/pipermail/click/2009-February/007659.html") ２つのエレメント間でデータを共有するにはグローバル変数で良いが、果たしてそれらのエレメントが同じコンフィグファイル内で複数回使われたらどうなるのか教えて欲しい
         | という話題が出てくる。残念ながらリンク先からはその答えが見つけられないが、自分がいま探しているのが２つのエレメント間での共有だけであれば、このページを読むだけでグローバル変数を.ccファイルに書けばよいと勘付けるだろう。
-
+      p また、gprofでクリックのエレメントの速度測定が可能かなどの話題についても作者が既にメーリス内で答えている。（userlevel Clickでは可能で、Kernel Levelではoprofileを用いる）
       h4 その他まだ未整理の話題
       h5 複数element間でのデータの受け渡し
       p ３つの方法を思いついた。
@@ -510,3 +521,4 @@ haml lang="ja"
         li 20140603  FAQの存在を発見、リンクに追加
         li 20140604  Haml, Scssで全て書き直した
         li 20140605  指摘を受けて修正　誤：element/nullelement.cc 　正： element/standard/nullelement.cc
+        li 20140629  hamlをslimで書き直した

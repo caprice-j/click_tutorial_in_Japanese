@@ -1,63 +1,56 @@
 @charset "UTF-8";
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\000034}}
 #manualTitle {
   margin-top: 10px;
   font-size: 30px;
   font-weight: bold;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\000039}}
 #manualIndexExpandButton {
   position: fixed;
   left: 35%;
   top: 511px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000314}}
 #table-of-contents-div {
   border: 1px solid #AAA;
   background-color: #FFF;
   padding: 5px;
   font-size: 80%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000321}}
 #table-of-contents-div h2 {
   margin-left: 10px;
   font-size: 100%;
   font-weight: bold;
   color: #666;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000329}}
 #table-of-contents-div ol {
   margin: 3px 0 3px 0px;
   padding-left: 15px;
   list-style-type: decimal;
   position: outside;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000335}}
 #table-of-contents-div ol.chapter {
   padding-left: 0px;
   list-style-type: upper-roman;
   list-style-position: inside;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000346}}
 #table-of-contents-div ol ol ol li {
   display: inline;
   margin-top: 0px;
   margin-bottom: 0px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000352}}
 #table-of-contents-div ol ol ol li:after {
-  font-size: 1.0rem;
-  content: ", ";
+  font-size: 0.7rem;
+  content: "/";
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000360}}
 ul {
   padding-left: 20px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000362}}
+a {
+  color: #333;
+}
 a .toclink {
   font-family: "MS Pゴシック", Osaka, "ヒラギノ角ゴ Pro W3", sans-serif;
   font-size: 50%;
@@ -65,7 +58,6 @@ a .toclink {
   text-decoration: underline;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000375}}
 body {
   color: #000;
   font-family: Verdana,Arial,'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック','MS PGothic',sans-serif;
@@ -78,14 +70,13 @@ body {
   padding: 0;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\0000389}}
 #left_frame {
   color: #000;
   background-color: #fff;
   border-color: #ccc;
   border-right: 3px;
   border-style: solid;
-  line-height: 1.4;
+  line-height: 1.1;
   left: 0;
   height: 100%;
   margin: 0;
@@ -94,9 +85,9 @@ body {
   _position: absolute;
   top: 0;
   width: 250px;
+  overflow: scroll;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003107}}
 #right_frame {
   position: absolute;
   background-color: #FFF;
@@ -107,68 +98,57 @@ body {
   _overflow: auto;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003116}}
 .note {
   /* spanタグのtitle属性に豆知識を書く。マウスオーバーすると読める。 */
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003119}}
 #footnote-container {
   margin: 0px 10px;
   padding: 5px;
   border: solid　1px　 white;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003127}}
 sup {
   color: #39F;
   font-size: 1.3rem;
   cursor: pointer;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003135}}
 .console {
   background-color: #262626;
   color: #EEF;
   padding-left: 5px;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003140}}
 .console:before {
   content: "";
   color: #FF0;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003146}}
 h2#toc_index_title {
   line-height: 1;
   margin-bottom: 0;
   margin-top: 0;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003154}}
 h3 {
   counter-increment: num_h_three;
   counter-reset: num_h_four;
   text-decoration: underline;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003160}}
 h3:before {
   font-size: 1.5rem;
   content: "" counter(num_h_three) "章 ";
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003164}}
 h4 {
   counter-increment: num_h_four;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003166}}
 h4:before {
   font-size: 1.2rem;
   content: "" counter(num_h_three) "." counter(num_h_four) ". ";
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/PCUser\/Dropbox\/IE2014\/click_tutorial_in_Japanese\/css\/basic\.scss}line{font-family:\00003171}}
 strong {
   text-align: center;
   display: block;
