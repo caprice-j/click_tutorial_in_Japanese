@@ -3,19 +3,16 @@
   <head>
     <meta charset="UTF-8">
     <link href="css/bootstrap-2.3.2.css" rel="stylesheet">
-    <link href="jquery.tocify.css" rel="stylesheet">
+    <link href="css/jquery.tocify.css" rel="stylesheet">
     <link href="css/basic.css" rel="stylesheet">
     <script src="js/jquery-2.1.0.js"></script>
     <script src="js/jquery-ui-1.10.4.custom.js"></script>
+    <script src="js/jquery.tocify.js"></script>
     <script src="js/bootstrap-2.3.2.js"></script>
-    <script src="js/tableofcontents.js"></script>
     <title>ClickJapanese</title>
   </head>
   <body>
-    <div id="left_frame">
-      <div id="manualIndexExpandButton"></div>
-      <div id="table-of-contents-div"></div>
-    </div>
+    <div id="left_frame"></div>
     <div class="tocChild" id="right_frame">
       <header id="manualTitle">
         Click Tutorial in Japanese ver.0.4
@@ -550,7 +547,7 @@ KernelFilterによる呼出でインストールされたファイヤーウォ�
       <p>
         この「Clickが動いている時だけ適用されるフィルタリングルール」については、例えば以下のように確認ができる。
       </p>
-      <img src="mg/view_iptables.png">
+      <img src="img/view_iptables.png">
       <p>
         Clickで作ったルーターがバックグラウンド(&)で動いている間だけ、DROP all -- anywhere anywhere なるとても強いフィルタリングルールが適用されていることが分かる。なおこのようなシェルプログラミングに苦手意識があるならば、"A practical guide to Linux commands, editors, and shell programming"(Mark G. Sobell, 2012)のChapter 2, 3, 4, 5, 8, 10を勧める。
       </p>
@@ -751,6 +748,12 @@ STLの標準ライブラリを取り込むことも可能であるし、たと�
           20140629  hamlをslimで書き直した
         </li>
       </ul>
+      <script type="text/javascript">
+        $(function() {
+            //Calls the tocify method on your HTML div.
+            $("#left_frame").tocify();
+        });
+      </script>
     </div>
   </body>
 </haml>
