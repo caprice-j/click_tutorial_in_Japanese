@@ -11,6 +11,21 @@
   top: 511px;
 }
 
+.theMostUpperToc {
+  counter-increment: num_idx;
+}
+.theMostUpperToc > .tocify-item > a {
+  font-weight: bold;
+}
+.theMostUpperToc > .tocify-item > a li, .theMostUpperToc > .tocify-item > a ul {
+  font-weight: normal;
+}
+.theMostUpperToc > .tocify-item > a:before {
+  font-size: 1.1rem;
+  font-weight: bold;
+  content: "" counter(num_idx) "章 ";
+}
+
 #table-of-contents-div {
   border: 1px solid #AAA;
   background-color: #FFF;
@@ -58,6 +73,10 @@ a .toclink {
   text-decoration: underline;
 }
 
+#right_frame a {
+  color: #08F;
+}
+
 body {
   color: #000;
   font-family: Verdana,Arial,'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック','MS PGothic',sans-serif;
@@ -66,16 +85,12 @@ body {
   letter-spacing: 0;
   line-height: 1.3;
   margin: 0;
-  _overflow: hidden;
   padding: 0;
 }
 
 #left_frame {
   color: #000;
   background-color: #fff;
-  border-color: #ccc;
-  border-right: 3px;
-  border-style: solid;
   line-height: 1.1;
   left: 0;
   height: 100%;
@@ -84,14 +99,13 @@ body {
   position: fixed;
   _position: absolute;
   top: 0;
-  width: 250px;
-  overflow: scroll;
+  width: 265px;
 }
 
 #right_frame {
   position: absolute;
   background-color: #FFF;
-  margin: 0 0 0 260px;
+  margin: 20px 0 0 285px;
   padding: 0;
   height: 100%;
   width: 70%;
@@ -106,6 +120,10 @@ body {
   margin: 0px 10px;
   padding: 5px;
   border: solid　1px　 white;
+}
+
+p {
+  line-height: 1.9em;
 }
 
 sup {
@@ -131,6 +149,10 @@ h2#toc_index_title {
   margin-top: 0;
 }
 
+h3, h4, h5 {
+  margin-top: 30px;
+}
+
 h3 {
   counter-increment: num_h_three;
   counter-reset: num_h_four;
@@ -143,10 +165,19 @@ h3:before {
 
 h4 {
   counter-increment: num_h_four;
+  counter-reset: num_h_five;
 }
 h4:before {
   font-size: 1.2rem;
-  content: "" counter(num_h_three) "." counter(num_h_four) ". ";
+  content: "" counter(num_h_three) "." counter(num_h_four) "節 ";
+}
+
+h5 {
+  counter-increment: num_h_five;
+}
+h5:before {
+  font-size: 1.2rem;
+  content: "" counter(num_h_three) "." counter(num_h_four) "." counter(num_h_five) "  ";
 }
 
 strong {

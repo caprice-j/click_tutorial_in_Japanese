@@ -250,8 +250,8 @@
 
                 // Creates an unordered list HTML element and adds a dynamic ID and standard class name
                 ul = $("<ul/>", {
-                    "id": headerClassName + index,
-                    "class": headerClassName
+                    "id": headerClassName + index, // first ul (tocify-header[n])
+                    "class": headerClassName + ' theMostUpperToc'
                 }).
 
                 // Appends a top level list item HTML element to the previously created HTML header
