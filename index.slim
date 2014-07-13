@@ -26,21 +26,34 @@ haml lang="ja"
 
 
       h3#what-is-click Clickとは
-      ul
-        li ルーターの機能を記述するためのC++の巨大なライブラリである。
-        li Unix系OS(Linux, Android。Mac OS Xでも一部は動く)上で動く。
-        li 拡張する（ライブラリ内に無い、自分の欲しい機能を作る）にはC++の知識がかなり必要とされる。
-        li 
-           | 設計の背景については 
-           a(href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf") Click作者の論文
-           | が詳しい。
-        / li
-        /   a(href="http://read.cs.ucla.edu/click/") 公式サイト
-        /   | では大文字でClickと表記されているが、以下では簡単のためclickとする。
+      h4 概要
+      p ルーターの機能を記述するためにC++で書かれたライブラリである。
+      p 現MIT助教授であるEddie Kohler氏の手によるもので、Unix系OS上で動く。
+      h4 目的
+      p 昔のルーターはそもそも「ルーティング」をするだけの単純なマシンだった。すなわち
+      strong「いま届いたデータを目的地に届けるためには、どのケーブルに送り出すのが最善か」を判定する
+      p だけの機器にすぎなかった。しかし当初は想定もしなかった機能、たとえば
+      strong あとから届いたデータを、先に届いたデータより優先して目的地に送り出す
+      p といった機能が、リアルタイム性を重視するアプリケーション(音声通話など)の登場に伴って、切実に必要になってきた。「優先する」といっても、その判断基準は目的地がいいのか、時間帯がいいのか、それともアプリケーションの種別がいいのかは実際にやってみなければ分からない。高品質を実現するためには実験の繰り返しが不可欠であり、従来のルーターではその繰り返しが難しかった。言い換えれば、
+      strong 実験に必要なルーターの新機能を、手早く実装する
+      p 
+        | 仕組みが求められていた。その一つがプログラムでルーター機能を作る「ソフトウェアルータ」であり、
+        span.strong_decoration Clickの目的は、この「ソフトウェアルータ」を高速に作ることである。
 
+      h4 注意
+      p
+        | 他の言語から移ってきた方などは、必要に応じて
+        a(href='#references' class="replace_me")
+        | などを参照することをお勧めする。ClickはC++で書かれているため、C++言語の知識が前提となる。特に、拡張する（Click内に無い、自分の欲しい機能を作る）には知識がかなり必要となる。
+      p 
+        | またC++に既に慣れている方は、Clickのアーキテクチャの癖を知るために
+        a(href='#click-documents' class="replace_me")
+        | に挙げた各種ドキュメントを適宜参照することをお勧めする。具体的な設計アーキテクチャは
+        a(href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf") Click作者の論文
+        | に記載されている。
       h3#install-click インストールする
-      h4 インストールの手順
-      p 以下にインストールの手順を示す。git, make, GCCはインストール済みと仮定している。GCCはclangでも動くはず。
+      h4#how-to-install-click 手順
+      p インストールの手順を示す。gitとmakeとGCCはインストール済みと仮定している。GCCはclangでも動くはず。
       pre.console
         | git clone https://github.com/kohler/click.git
           cd click            # change directory
@@ -51,7 +64,7 @@ haml lang="ja"
         p （※１ /usr/local/binにClickの実行ファイル、/usr/local/libにlibclick.aなどの静的ライブラリ、/usr/share/includeにヘッダファイルがインストールされる。）
 
       p 以上でインストールは終了である。
-      p --disable-linuxmoduleを付けなくても成功すれば構わないが、無いと失敗するディストリビューションがある。「カーネルスペースでのClickの機能を使わない」と宣言するだけのフラグなので、初期は付けておいて問題ない。必要になればまた--enable-linuxmoduleを付けて以上の作業を行なえばよい。またMac OS上では、当然ながらこのフラグを付けないと以下のエラーが出て失敗する。
+      p --disable-linuxmoduleを付けなくても成功すれば構わないが、無いと失敗するディストリビューションがある。「カーネルスペースでのClickの機能を使わない」と宣言するだけのフラグなので、初期は付けておいて問題ない。必要になればまた--enable-linuxmoduleを付けて以上の作業を行なえばよい。また当然ながらMac OS上ではこのフラグを付けないと失敗する。エラーメッセージは以下である。
 
       pre.errorConsole
         | configure: error:
@@ -62,25 +75,33 @@ haml lang="ja"
 
           =========================================
       p
-        = "--enable-localは"
+        = "--enable-localというフラグは"
         a(href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements") 公式FAQ
-        | で指摘されているように、のちにelements/local フォルダ以下に自作のエレメントを追加するときに必要となる。無くても上記のsudo make installまでは成功するが、オンにしておいたほうが無難である。重要なのでもう一度言う。オンにしておいたほうが無難である。
-
-      h4 --disable-linuxmoduleの詳細
-      p sudo make installによって/usr/local/bin以下にClickのバイナリがインストールされた。これでようやくClickによるソフトウェアルーター(正体は,大量の設定項目(Configuration String)が渡されたClickバイナリ内の_main関数のはず)が起動できる...と行きたいところだが、上記のように--disable-linuxmoduleフラグを付けて./configureした場合、click/elements/linuxmodule以下に存在するプログラムは/usr/local/以下にインストールされない。
+        | で指摘されているように、のちにelements/local フォルダ以下に自作のエレメントを追加するときに必要となる。無くても上記のコマンドは成功するが、オンにしておいたほうが無難である。重要なのでもう一度言う。
+        strong オンにしておいたほうが無難である。
+      h4 --disable-linuxmoduleの作用
+      p 
+        | 以上で/usr/local/binにClickのバイナリがインストールされた。これでようやくClickによるソフトウェアルータが起動できる...と行きたいところだが、上記のように--disable-linuxmoduleフラグを付けて./configureした場合、click/elements/linuxmodule以下に存在するプログラムは/usr/local/以下にインストールされない(click/elements/linuxmoduleがどこを指すか不明であれば
+        a(href="#my-abbreviation" class="replace_me") 
+        | の節を参照のこと)。
       p この状態で、例えばclick/conf/udpcount.clickというルーター設定で動かしてみると、以下のエラーが表示される。
       pre.errorConsole
         | $sudo click conf/udpcount.click
           conf/udpcount.click:17: unknown element class 'PollDevice'
           conf/udpcount.click:19: unknown element class 'ToHost'
-      p PollDeviceとToHostというlinuxmoduleに含まれるエレメントがインストールされていないことが分かる。
-
+      p linuxmoduleに含まれるエレメントがインストールされていないことが分かる。
+      h4#my-abbreviation 断りなく使用する略記
+      p 
+        | click/elements/のようにclickからパスを書き始めた場合、それは
+        a(href="#how-to-install-click" class="replace_me") 
+        | の節でcloneしたclickディレクトリを指す。たとえばそのclickディレクトリが/home/myname/にあった場合、/home/myname/clickのことを指すものとする。
+      p また、conf/test.clickのように唐突に書き始めた場合はclick/conf/test.clickを指すものとする。
       h4 VirtualBoxのネットワークについて
-      p 以下はあくまで僕の理解である。<i class="icon-envelope"></i>
+      p 以下はあくまで僕の理解である。
       table.table.table-striped.table-condensed.table-bordered
         tr
-          th 種類/相手先
-          th インターネット
+          th 種類/通信相手
+          th インターネット上のマシン
           th ホストOS
           th 別のゲストOS
         tr
@@ -98,9 +119,9 @@ haml lang="ja"
           td X
           td X
           td O
-      p VMにOSをインストールしたあとは、以下のように、同じマシンに対して複数のネットワーク設定を作ってしまうことを推奨する。ひとつはHost-OnlyかInternalで実験用、もう一つはNATにしておいてパッケージをインストールするときなどに使う。
+      p 仮想マシンにOSをインストールしたあとは、以下のように、同じマシンに対して複数のネットワーク設定を作ってしまうことを推奨する。ひとつはHost-OnlyかInternalで実験用、もう一つはNATにしておいてパッケージをインストールするときなどに使う。
       img(src="img/2VM_network_settings.png")
-      h4 VirtualBoxのマシンを複製する
+      h4#how-to-copy-virtual-machine VirtualBoxのマシンを複製する
       p ネットワークの実験では3台や4台のマシンが欲しくなることも多い。その際にOS、Wireshark、Clickなどを一台ずつ個別にセットするのは手間である。VirtualBoxでは、１台必要な環境を仮想ハードディスクにインストールしてしまえばその.vdiファイルを簡単に流用できる。
       p 単純にコピペして、VBoxManageのsethduuidコマンドでUUIDを変更するのでもよいが、clonevdiコマンドを用いれば1手間で済む(UUIDを変更する必要があったかも？未確認)。ただしHDDが使用中だと以下のエラーを出して失敗するため、Save the machine stateでもいいので、一度止めてから再実行する。
       pre.errorConsole
@@ -111,70 +132,115 @@ haml lang="ja"
 
 
       h3 試す
-      h4#hello-world Hello World　(?)を行う
+      h4#hello-world Hello World (?)を行う
       p
         a(href="http://www.read.cs.ucla.edu/click/tutorial1#preparation") 公式サイトのチュートリアル
         | の簡易版である。
-      p 以下では、断りがなければClickのルートディレクトリ(git cloneされたものの中で最上層のディレクトリ)に居るとする。
       pre.console
-        | click conf/test.click
+        | click click/conf/test.click
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
-      p となればHello World　(?)成功である。まだconf/test.clickの中身は理解せずとも問題ない。
+      p となればHello World成功である。まだconf/test.clickの中身は理解せずとも問題ない。
 
       h4#test-device 既存のClickルータを動かす
       pre.console
         sudo click conf/test-device.click
-      p とした上で、例えばブラウザでWebページを開くなどするとeth0に届いたパケットの先頭数十バイトが表示される。eth0がないマシン上の場合は適宜変更するとよい(ifconfigで調べたのち、例えば開発機ではtest-device.clickのeth0をen0に書き換えた)。
+      p とした上で、例えばブラウザでWebページを開くなどするとeth0に届いたパケットの先頭数十バイトが表示される。eth0がないマシン上の場合はtest-device.clickファイル内の該当部分を変更するとよい。または以下のファイルで定義されたネットワークインターフェイスカードの識別子を書き換える方法も考えられる。
+      pre.console
+        | cpr@mnt ~ $ cat /etc/udev/rules.d/70-persistent-net.rules 
 
-      h4#change-string Configuration Stringを変えてみる
-      p Configuration Stringの定義は後述する。エディタでconf/test.clickを開いて、LIMIT 5の部分をLIMIT 4にしてみる。そしてclick test.clickとして実行すると、
+          # PCI device 0x8086:/sys/devices/pci0000:00/0000:00:03.0 (e1000)
+          SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="08:00:27:49:f0:94", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="eth*", NAME="eth0"
+      p eth0の部分を好きな識別子に書き換えたのち、再起動すれば変更が反映される。
+
+      h4#change-string .click内の設定項目を変えてみる
+      p 
+        | conf/test.clickを開いてみよう。
+      pre.console
+        | cat -n conf/test.click      # -n オプションは行番号を付与する
+          1  // test.click
+          2  
+          3  // This configuration should print this line five times:
+          4  // ok:   40 | 45000028 00000000 401177c3 01000001 02000002 13691369
+          5  
+          6  // Run it at user level with
+          7  // 'click test.click'
+          8  
+          9  // Run it in the Linux kernel with
+          10  // 'click-install test.click'
+          11  // Messages are printed to the system log (run 'dmesg' to see them, or look
+          12  // in /var/log/messages), and to the file '/click/messages'.
+          13  
+          14  InfiniteSource(DATA \<00 00 c0 ae 67 ef  00 00 00 00 00 00  08 00
+          15  45 00 00 28  00 00 00 00  40 11 77 c3  01 00 00 01
+          16  02 00 00 02  13 69 13 69  00 14 d6 41  55 44 50 20
+          17  70 61 63 6b  65 74 21 0a>, LIMIT 5, STOP true)
+          18    -> Strip(14)
+          19    -> Align(4, 0)    // in case we are not on x86
+          20    -> CheckIPHeader(BADSRC 18.26.4.255 2.255.255.255 1.255.255.255)
+          21          -> Print(ok)
+          22    -> Discard;
+
+      p 
+        |  14 - 17行目に現れている<strong>(DATA ... , LIMIT 5, STOP true)</strong>のようなコンマで区切られた設定項目を、Click独自の用語でConfiguration stringと呼ぶ。DATA, LIMIT, STOPと、合計３つある設定項目を合わせて1つのConfiguration stringとみなす。
+      p 18行目にStrip(14)と言う設定があるが、ここでは14だけで1つのConfiguration stringを構成している。
+      p 17行目について、LIMIT 5をLIMIT 1にしてみよう。そして以下のコマンドでソフトウェアルータとして動かしてみる。
       pre.console
         | click conf/test.click
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
-          ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
-          ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
-          ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
-      p のように、先ほど5回表示されたパケットの先頭バイトが、4回のみ表示されるようになった。
-      p 同様にconf/test-device.clickをエディタで開き、Print(ok)をPrint(noProblem)とすると、先ほど出力でokと書かれていた場所にnoProblemと表示される。一方で、Print(no problem)とすると、
+      p 先ほど5回表示されたパケットの先頭部分が、1回のみ表示されている。
+      p 同様にconf/test-device.clickをエディタで開き、Print(ok)をPrint(noProblem)とすると、先ほど出力でokと書かれていた場所にnoProblemと表示される。次にPrint(no problem)と変えてみると、
       pre.errorConsole
-        click conf/test.click
-        no: unknown argument
-        Router could not be initialized!
-      p というエラーメッセージが出てルーターが作動しない。スペースは不可だと分かる。
-      p このような試行錯誤でもClickの作法は学べるが、いささか場当たり的である。より体系的な方法としては、該当するエレメントのmanを読むという手がある。
+        | click conf/test.click
+          no: unknown argument
+          Router could not be initialized!
+      p というエラーメッセージが出てルーターが作動しない。
+      p このような試行錯誤でもClickの作法(癖)は学べるが、いささか場当たり的である。より体系的な方法としては、該当するエレメントのmanを読むという手がある。
       pre.console
-        man Print    # printとすると、ヒットしない！ 大文字にすること
-      p これで、PrintエレメントについてのClick公式側が用意した全ての説明を読むことができる。ただし実際に読んでみると、「テキスト(manの説明ではLABEL)にスペースが含められない」、さらに言えば「'(クォーテーション)または"(ダブルクォーテーション)で括れば書ける」という事実は明記されていない。このような暗黙の了解事項は、何度もルーターを少し変えては動かすことで学ぶのが一番早いだろう。
+        | man Print    # printとすると、ヒットしない！ 大文字にすること
+      p 
+        | これで、Clickが公式に用意した説明を読むことができる。ただし実際に読んでみると、
+        strong テキスト(manの説明ではLABEL)に空白文字を含めることはできない
+        | という設計は読み取れない。さらに言えば
+        strong しかし ' (クォーテーション) または " (ダブルクォーテーション) で括れば書ける
+        | という設計内容も明記されていない。このような暗黙の了解事項は、何度もルーターを少し変えては動かすことで学ぶのが一番早いだろう。この手早さがClickの1つの強みである。
 
-      h4#read-thesis Elementとその関連概念を知る
-      h5 Configuration File
-      p まず初めに、今までの話に登場してきた.clickという拡張子のファイルはConfiguration Fileと呼ばれる。以下では「コンフファイル」もしくは「コンフィグファイル」と略記する。ルーターに実現させたい処理を記述したファイルである。
+      h4#read-thesis Click独自の用語を知る
+      h5 Configuration file
+      p 今まで登場してきた　.click　という拡張子のファイルはClick独自のファイルでありConfiguration fileと呼ばれる。以下では「コンフファイル」もしくは「コンフィグファイル」と略記する。ルーターに実現させたい処理を記述したファイルである。
       pre.console
-        click myFile.click
+        | click myFile.click
       p のように標準入力からクリックのプログラムに渡して実行することで、内部に記された処理が実行される。
       p
-        | よって「Clickでルーターを作る」と言った際、その最終段階はこの
-          strong コンフィグファイルを作り、<br>各処理ごとのConfiguration String(引数)を修正する
-          ことだと言える。ルーターを作る、という想像も付かないような作業を、必要最小限の場合としてこのレベルまで抽象化したことがClickの功績であろう。
-      p コンフファイルはより具体的には、elementと呼ばれる処理のまとまり（ふつうのプログラミング書籍でいわれるモジュールに相当する）を並べて作られる。FromDevice(eth0) -> Print(ok) -> ToDevice(eth0);という1行のコンフファイルであれば、FromDevice(eth0)とPrint(ok)とToDevice(eth0)の３つがelementである。
+        | よって「Clickでルーターを作る」と言った際、その最終段階は必ず
+        strong コンフィグファイルを作り、<br>各処理ごとのConfiguration stringを(出力を見ながら)調整する
+        | 作業になる。ルーターを作る、という想像も付かないような作業を、必要最小限の場合としてこのレベルまで抽象化したことがClickの功績である。
+      p コンフファイルはより具体的には、elementと呼ばれる処理のまとまり（ふつうのプログラミング書籍でいわれるモジュールに相当する？）を並べて作られる。FromDevice(eth0) -> Print(ok) -> ToDevice(eth0);という1行のコンフファイルであれば、FromDevice(eth0)とPrint(ok)とToDevice(eth0)の３つがelementである。
 
       h5 element
-      p 訳さずにelementのまま理解したほうが良いと思われる。「オブジェクト志向」を「物体志向」と訳さないのと同じ理由である。作者の設計思想が如実に反映されており、日本語の「要素」にはない細かな形式的な制限がある。
+      p 訳さずにelementのまま理解したほうが良いだろう。
+      img(src="img/element_architecture.png")
       p
         | input port, output port, configuration string, element classの4つで主に構成される。図解や制限は
         a(href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf") click作者の論文
         | のp.4にあるelementの図に任せる。
-      p p.4の図からはinput portは全てのelementに必要に思えるが、そのすぐ下の図を見るとFromDeviceなどはinput portがない。同様にToDeviceにはoutput portがない。最終的にelementを自作する際は、このように設計段階でのinput portやoutput portの数、またpullやpushと言った処理の種類に合わせてコードを書いていくことになる。
+      p p.4の図からはinput portは全てのelementに必要に思えるが、そのすぐ下の図を見るとFromDeviceなどはinput portがない。
+
+      img(src="img/fromdevice.png")
+
+      p 
+        | 同様にToDeviceにはoutput portがない。最終的にelementを自作する際は、このように設計段階でのinput portやoutput portの数、またpullやpushと言った処理の種類に合わせてコードを書いていくことになる。その設計は
+        a(href="http://read.cs.ucla.edu/click/doxygen/class_element.html#e5b51c221451df6a3045f7e523c2e892") port_count()関数
+        | に詳しい。
 
       h5 pull, push, agnostic
       p 
         | 上記論文p.4のelementの図において、黒く塗りつぶされている三角・四角がpushのinput portとoutput portであり、そうでない三角・四角がpullのinput portとoutput portである。pushのinput portはpushのoutput portにしか繋げない。またpullのinput portはpullのoutput portにしか繋げない。絵で言えば、
         strong ■ → ▲と□ → △だけが許されて、■ →△と□ → ▲は許されない
-        ということである（エラーが出て落ちる）。agnosticは後続するelementがpushならばpush, pullならばpullになる柔軟なelementである。一般的な訳は「不可知論者」である。実装するのが難しそうな気がする。
+        | ということである（エラーが出て落ちる）。agnosticは後続するelementがpushならばpush, pullならばpullになる柔軟なelementである。
 
       p このpushとpullがC++上でどのように実現されているかはclick/elements/standard/nullelement.ccを見ると掴めるかもしれない?
       pre.console
@@ -194,14 +260,20 @@ haml lang="ja"
           return input(0).pull();
           }
       h5 keywords
-      p 
-        a(href="http://www.read.cs.ucla.edu/click/elements") 
-        | elementを1つ1つ説明している公式ドキュメント
-        では、KEYWORDSという単語が登場する。LIMIT 5のLIMITなどがそれである。
+      p  
+        |
+        a(href="http://www.read.cs.ucla.edu/click/elements") 公式サイト
+        | にKEYWORDSという単語が登場する。上記で登場した中ではLIMIT 5のLIMITなどがそれである。
       p 論文から理解したいことは以上の4つである。論文後半ではCPUスケジューリングについて言及があるが、パフォーマンスを考慮する段階になるまで放っておいて構わない。
       h6 注. configuration stringの書き方、文法
-      p http://www.read.cs.ucla.edu/click/docs/language#configuration-stringsに文字列、IPアドレスなどconfiguration string１つ１つの記法が紹介されている。大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++では非文なので、例外的な拡張である。
-      p 上のURLの説明をhttp://www.read.cs.ucla.edu/click/elements以下にある各elementの説明と併用すれば問題なく一発で書けるはず。
+      p 
+        |
+        a(href="http://www.read.cs.ucla.edu/click/docs/language#configuration-strings") Clickの言語仕様 
+        |に文字列、IPアドレスなどそれぞれの記法が紹介されている。大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++では非文なので、例外的な拡張である。
+      p 
+        |上のURLの説明を
+        a(href="http://www.read.cs.ucla.edu/click/elements") エレメントの一覧
+        | と併用すれば少ないミスで書けるはず。
       h4#write-ip-router (発展)既存のelementでIPルータを作る
       p 日経ネットワーク2013年12月号で『ソフトウェア教材「Click」で学ぶルーターの動作』という20pほどの特集が組まれている。おそらく2014年3月現時点でClickの動作について日本語でまとまって解説されているのはこの特集だけだと思われる。数十個の既存elementを組み合わせるとARP処理まで含めたＩＰルータが作れると述べている。日経の雑誌なので学内回線もしくはssl-vpnで読めるらしい。
 
@@ -211,17 +283,24 @@ haml lang="ja"
       h4 which, locateコマンド
       pre.console
         | which click           # clickという名前のバイナリを探し、一番最初に見つかったものを返す
-          /usr/local/bin/click  #
-      p | /usr/binに新しくインストールしたが/usr/local/binが先に見つかってしまい使えない、というバグが発見できる。一番簡単な解決策は
+          locate click          # ファイル名にclickを含むファイルを一覧表示する。
+      p | whichでは/usr/binに新しくインストールしたが/usr/local/binが先に見つかってしまい使えない、というバグが発見できる。その場合の最も楽な解決策は
       pre.console
-        /usr/bin/click  # 絶対パスで指定することである。
+        | /usr/bin/click my_config.click # 絶対パスで指定することである。
+      p 
+      | locateでは、
+      a(href="#install-click" class="replace_me")
+      | の章に書いた「clickバイナリがインストールされたディレクトリ」などを一覧できる。絶対パスで指定する必要に迫られた場合に役立つ。
 
       h4 find, grepコマンド
       pre.console
-        | find . -name click*
-      p カレントディレクトリ . 以下に存在する、clickで始まる任意のファイルの絶対パスを全て表示する。
+        | find . -name click*     # 任意文字列の表記が .* ではなく * であることに注意
+      p カレントディレクトリ以下に存在する、ファイル名clickで始まる任意のファイルの絶対パスを全て表示する。
       h4 ctags, cscopeライブラリ
-      p 関数名から関数定義へ飛べるツール。筆者は使用中のエディタで使えるctagsを利用している。
+      p 
+        | 関数名から関数定義へ飛べるツール。筆者は使用中のエディタで使える
+        a(href="http://ctags.sourceforge.net/") ctags
+        | を利用している。
       h4 Sublime Text 3の機能
       p Sublime Text 3はソースコード内の検索機能に優れたテキストエディタである。
       h5 findの強化版 (ctrl + p)
@@ -230,7 +309,7 @@ haml lang="ja"
       h5 grepの強化版 (ctrl + shift + f)
       img(src="img/grep_sublime.png")
       p grepとは違い、ハイパーリンク機能が付いている。行番号をクリックするとファイルが別タブで開く。
-      h4 ドキュメント
+      h4#click-documents 文書を読む
       h5 ElementsとDriver
       p
         | オンラインでは
@@ -238,19 +317,20 @@ haml lang="ja"
         | と、
         a(href="http://www.read.cs.ucla.edu/click/docs") 内部ツールの一覧
         | から読める。オフラインでの閲覧は
-        a(href="#offline-element-doc" class="replace_my_text")
+        a(href="#offline-element-doc" class="replace_me")
         | を参照のこと。
         | ただしDriverのmanを初期に参照することは無い。
-        | また、apropos Classifierとすると、manの全文検索が行える。
+        | またapropos Classifierとすると、manの全文検索が行える。
 
       h5 API(doxygen)
       p 
         | オンラインでは
         a href="http://read.cs.ucla.edu/click/doxygen/" API documentation
-        | から読める。このドキュメントは初めにgit cloneしたClickの中、すなわちclick/doc以下に入っているので、doxygenというプログラムで生成すればオフラインでも読める。方法は
-        a(href="#offline-doxygen-doc" class="replace_my_text")
+        | から読める。このドキュメントはclick/doc以下に入っているので、doxygenというプログラムで生成すればオフラインでも読める。方法は
+        a(href="#offline-doxygen-doc" class="replace_me")
         | を参照のこと。
       h4 Linuxの実行中情報
+      / FIXME: もっと詳しく
       ul
         li ifconfig   # NICのIPアドレス、MACアドレス、ONかOFFかを確認する。
         li netstat    # 現在ソケット通信を行っているプログラムを表示する。
@@ -258,7 +338,7 @@ haml lang="ja"
         li traceroute # パケットが届くまでに通るルーターを一覧表示する。
         li strace     # Linuxのみ。プログラム内で呼び出したシステムコールを表示する。ソースコードを読むよりも早く実行内容を理解できるケースがある。
         li wireshark  # パケットキャプチャ。きちんとNICに届いているかなどを確認できる。
-        li tcpdump    # 同上
+        li tcpdump    # 同上。遠隔マシンではwiresharkより役立つ？
 
 
       h3 作ってみる
@@ -266,20 +346,18 @@ haml lang="ja"
       p
         | 自作のelementを使う場合、言っておかないと確実に誰もがハマって数時間を費やす注意点は
         strong ./configureのときに--enable-localオプションをつけておく必要がある
-        ということである。これをしておかないと以下でclick/elements/local以下に自作のelementを追加しても、sudo make installされたとき（clickが、その自作のelementを含めてプログラムを再構成するとき）にコンパイルされない。
+        | ということである。これをしておかないと以下でclick/elements/local以下に自作のelementを追加しても、sudo make installされたとき（clickが、その自作のelementを含めてプログラムを再構成するとき）にコンパイルされない。
       p
         | このチュートリアルでは
-        a(href="#install-click" class="replace_my_text")
+        a(href="#install-click" class="replace_me")
         | の章で既にそれに言及しているため問題はないだろうが、仮にそのオプションを指定していない場合は上記のURLの./configure --prefix=$HOMEを実行する前の作業から、設定をやり直す必要が生じる。
       p click/elements/local以外のディレクトリでも作る方法を以下でも解説するが、まだ一部しか理解していない(EXTRA_DRIVER_OBJSのような、外部ライブラリを使う際に違いが生じるようである)。
 
       p 自作elementを追加したあとは、毎回
       pre.console
-        | #「sudo make install」でコンパイルされるelementの一覧(click/elements.conf)を書き換えるコマンド。
-          make elemlist
-          # elements.confに従って自作elementをコンパイルする。C++の文法ミスなどはここでエラーが出る。
-          sudo make install
-      p の2つのコマンドを実行する(elements/local以下に追加した場合はsudo make elemlistしなくても良かった気が...未確認)。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを実行できるようになる。（myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。man 1 clickにあるようにCLICK_BACKTRACEをONにすると原因が掴めるかも？）
+        | make elemlist　     # 「sudo make install」でコンパイルされるelementの一覧(click/elements.conf)を書き換えるコマンド。
+          sudo make install  # elements.confに従って自作elementをコンパイルする。C++の文法ミスなどはここでエラーが出る。
+      p の2つのコマンドを実行する(elements/local以下に追加した場合はelemlistしなくても良かった気が...未確認)。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを利用可能になる。（myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。man 1 clickにあるようにCLICK_BACKTRACEをONにすると原因が掴めるかも？未確認）
 
       p 
         | 以上に書いたような「新しいelementの作り方」の概要は
@@ -290,12 +368,22 @@ haml lang="ja"
         | 更に詳しい情報は、
         a(href="http://www.read.cs.ucla.edu/click/doxygen/class_element.html")こちら
         | にまとまっている。
+      p 
+        | なお、ドキュメントには書いてないのだがC++をある程度知っている場合によく陥る注意点として、
+        strong ドキュメントで指定された関数について、余分にconstをつけてはいけない
+        | というものを挙げたい。これは、例えば
+        strong int Element::configure( Vector< String > & conf, ErrorHandler * errh )
+        | について、 引数confを変更しないからと
+        strong int Element::configure( const Vector< String > & conf, ErrorHandler * errh )
+        | と変更してしまうと、これは全く別の関数を宣言したことになるため、必要なインターフェイスが実装されていないということでエラーが出る。エラーメッセージが直感的でないため、このタイプのミスは事前に存在を知っておいたほうがよい。
 
       h4#api-element 内部APIを用いるelement
       p 新しいelementをClickで実装する際はAPIの理解が必須である。Clickは一般的なC++プログラマなら普通使うであろう「C++のSTLに含まれるStringなどの標準ライブラリクラス」を使わず、独自にそれらのStringクラスに相当するものをを実装し直して使うなどしており、呼び出す関数名や返ってくる戻り値などについてClick内部のソースコードを見ながら逐一確認する必要があるからだ。
       p API（クラスとそのメンバ関数群）はhttp://read.cs.ucla.edu/click/doxygen/classes.html にまとまっている。実際にはPacket.hhの説明を読んだ後、右上の虫眼鏡で検索したり、各タブを利用することでAPIを探していく。
-      p なおこのAPIドキュメントはオフライン閲覧もできる。後述する。
-
+      p 
+        | なおこのAPIドキュメントはオフライン閲覧もできる。
+        a(href="#offline-doxygen-doc" class="replace_me")
+        | を参照のこと。
       h4 外部ライブラリを呼び出す
       p coming soon
 
@@ -303,7 +391,7 @@ haml lang="ja"
       p
         | click/etc/samplepackage/READMEにあるが、コマンドの実行順序が読み取れない。不完全だが、以下までは把握した。なお、
         strong 事前にclick/etc/samplepackage以下のファイルを新規フォルダにコピーしておく
-        とよい。
+        | とよい。
       pre.console
         | pwd                # ->  ~/click/etc/samplepackage    
           ls                 # ->  configure.ac   Makefile.in   README   sampleelt.cc   sampleelt.hh   test.click
@@ -328,8 +416,8 @@ haml lang="ja"
       p configure.in内のEXTRA_DRIVER_OBJSをセットしよう。ただし、samplepackageのように別パッケージで作った場合、sudo makeは成功しても.clickファイルの実行時にundefined symbolエラーとなる。elements/local以下に置いた場合に.clickの実行まで含めて成功することは確認した。
 
       h4 ElementClassでエレメントを作る
-      p フォワーディング」とは、あるNICから入ってきたパケットを別のNICから送信する動作のことだ。主としてルータが行ない、特にIPパケットの場合はIPフォワーディングと呼称される。
-      p Linux環境では、/proc/sys/net/ipv4/ip_forwardの値を1にすると、自動的にIPフォワーディングの機能が有効になる(echo 1 > /proc/sys/net/ipv4/ip_forwardとすればよい。元に戻すにはecho 0 > /proc/sys/net/ipv4/ip_forwardとすればよい。)。これにおよそ相当する動作を、Clickのエレメントで実装してみると以下のようになる。
+      p 「フォワーディング」とは、あるNICから入ってきたパケットを別のNICから送信する動作のことだ。主としてルータが行ない、特にIPパケットの場合はIPフォワーディングと呼称される。
+      p Linux環境では、/proc/sys/net/ipv4/ip_forwardの値を1にすると、自動的にIPフォワーディングの機能が有効になる(sudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"とすればよい。元に戻すにはsudo sh -c "echo 0 > /proc/sys/net/ipv4/ip_forward" とすればよい。)。これにおよそ相当する動作を、Clickのエレメントで実装してみると以下のようになる。
       pre.console
         | elementclass MacRewriter{ $src, $dst |
             input                              // assume with ethernet header
@@ -350,7 +438,10 @@ haml lang="ja"
           \-> Queue -> ToDevice(eth0);
       img(src="img/ip_forwarding.png")
       p 上図のような状況で、Machine2上で上記のClickソフトウェアルーターをClickコマンドで起動した場合、10.0.0.1/8と11.0.0.2/8という異なるネットワーク間でのホストでデータのやりとりができる。Machine1からpingが通るかping 11.0.0.2/8をして試してみよう。もっともこの場合、隣り合うマシンのMACアドレスを知っていなければならず、あまり現実的ではない（？）。
-      p なおVirtualBoxを使っている場合はVboxManageのclonevdiコマンドを用いれば、複数台のVMの用意が楽になると思われる。
+      p 
+        | なおVirtualBoxを使っている場合はVboxManageのclonevdiコマンドを用いれば、複数台のVMの用意が楽になる。
+        a(href="#how-to-copy-virtual-machine" class="replace_me")
+        | を参照のこと。
       h4 エレメントにTelnet接続する
       p 
         | エレメントのマニュアル（man Printなど）には、MAXLENGTHなどのパラメタを列挙しているDESCRIPTIONとは別に、
@@ -381,6 +472,30 @@ haml lang="ja"
 
 
       h3 更に調べる(まだ未整理)
+      h4#click-architecture-map Clickの使い方を整理する
+      p　ここまでで紹介した様々な使用法を表として整理した。
+      table.table.table-striped.table-condensed.table-bordered
+        tr
+          th 追加・変更するコード
+          th 手早く設定を変更できるか
+          th 新機能が柔軟に追加できるか
+          th 管理のしやすさ
+        tr
+
+          td Configuration String
+          td ◎。ドキュメントを読んで.clickを書き換えるだけ。C++の知識が不要
+          td ✖。ただし既存エレメントの組み合わせで従来型ルータを作るのは柔軟かつ高速にできるのはよい。
+          td ◯。ただし次第に.clickファイルが溢れてくる
+        tr
+          td elements/local内の自作エレメント
+          td.vertical_center(rowspan=2) ◯。ただし最初はAPIドキュメントをかなり読む必要がある。慣れてくるとかなり早くなる。C++の知識をかなり前提としている
+          td ◎。EXTRA_DRIVER_OBJSが使えるので事実上どんな既存のLinuxプログラムとも組み合わせられる。./configure時に-pgなどを設定できるため、デバッグや性能測定も可能
+          td ✖。他のエレメントと混ざって見にくい。複数プロジェクトで使う場合は考えたくないほど。
+        tr
+          td パッケージ化した自作エレメント群
+
+          td △。EXTRA_DRIVER_OBJSが使えなかったり、gprofに必要な-pgフラグをどのMakefileにつければ良いのかが分からない現状では、どこかでelements/localに移す必要が出てくる。
+          td ◎。プロジェクトごとに管理可能
       h4#two-arguments elementの2引数()
       pre
         | もう一つelementという概念の設計思想として指摘しておくべき点としては、elementは引数にあたるものを２種類取るということである。その２つとはパケットとconfiguration stringである。これは、コンフファイルを書く最終段階でも、後述する「新しいelementを作る過程」でも、常に2種類を意識する必要がある。全然違う性格を持つからである。
@@ -530,25 +645,60 @@ haml lang="ja"
           Clickは今まで述べてきたようにelements間については厳格な形式制限があるが、ソースコードのレベルにおいては様々なライブラリを柔軟に取り込むことができる。
           STLの標準ライブラリを取り込むことも可能であるし、たとえばnetstatの機能を内部に追加するなども(更に高度になるが)可能である。
           実際、ClickのKernelFilterエレメントはiptablesコマンドをそのまま呼び出している。
-      h3 リンク
+      h3#references 参考文献
       ul
-        li <a href="http://www.gnu.org/software/make/manual/make.html">GNU makeの公式マニュアル</a> ... Clickを学んでいてmakeについて疑問が生じたら、このマニュアルかAndrew Oramの『make 改訂版』を参照することを推奨する。makeはググって情報を探すことに向いていない。
+        li <a href="http://www.gnu.org/software/make/manual/make.html">GNUによる公式マニュアル</a> ... makeはググって情報を探すことに向いていない。Clickを学んでいてmakeについて疑問が生じたら、このマニュアルかAndrew Oramの『make 改訂版』を参照することを推奨する。
         li 『ストラウストラップのプログラミング入門』 ... const参照の意義についての説明は感動。
         li 『詳説 Cポインタ』 ... 2章まで読むだけでも、ポインタの概要が分かる。
         li 『Linux Programming Interface』の41章 ... 静的/動的リンクについて詳細な説明がなされている。リンクのエラーはググっても解決策が出てこない（もしくはとても読みにくい）ことが多く、先に全体を知ってしまったほうが無難である。
+        li 『Linuxネットワークプログラミングバイブル』 ... ソケット通信の初歩を大量のサンプルコードと共に学べる。
       h4 その他
       ul
-        li 誤植や誤解などありましたら<a href="https://github.com/caprice-j/click_tutorial_in_Japanese">github</a>へお願いします
-        li 開発履歴
-        li 20140324  何となく書き始める
-        li 20140325  公開したら.txtですら案外好評だったので続ける気になる
-        li 20140402  目次をフレーム化するためにhtml化
-        li 20140530  IP forwardingの項を追加
-        li 20140603  FAQの存在を発見、リンクに追加
-        li 20140604  Haml, Scssで全て書き直した
-        li 20140605  指摘を受けて修正　誤：element/nullelement.cc 　正： element/standard/nullelement.cc
-        li 20140629  hamlをslimで書き直した
-        li 20140712  jquery.tocify.jsを利用した
+        li.no_replace_please
+          | 誤植や誤解などありましたら
+          a(href="https://github.com/caprice-j/click_tutorial_in_Japanese") github
+          | へお願いします
+      h4 使用ライブラリ等
+      ul
+        li
+          a(href="http://jquery.com/") jQuery 2.1.0
+          | 未だにソースコード読んでいない
+        li
+          a(href="http://getbootstrap.com/2.3.2/") twitter-bootstrap 2.3.2
+          | 世間では3.x系も出ているらしいが2.x系のデザインの方が好きである
+        li
+          a(href="http://gregfranko.com/jquery.tocify.js/") jquery.tocify.js 1.9.0
+          | 現在位置を表示してくれる目次というのは素晴らしい
+        li
+          a(href="http://fortawesome.github.io/Font-Awesome/") Font Awesome 4.1.0
+          | アイコンに色を付けたかった
+        li
+          a(href="http://alphapixels.com/prepros/") Prepros 4.2.0
+          | .slimと.scssを.htmlにコンパイルするアプリ　slimの存在を教えて下さったT先輩に感謝
+      h4 このチュートリアルに付けたい機能
+      ul
+        li 目次 ... 済(ライブラリ)
+        li 
+          | 辞書 ... 自作済　まだちょっと使いにくい 
+          ul
+            li 端で切れるのを改善したい
+            li .gzの説明が切れるのを直したい
+            li 複数表示したままにしたい
+            li aタグ内の文字の扱いを改良したい(現状それが原因でバグが起こるため文章を変えて回避中)
+        li 画像gif化 ... 動いたほうが分かりやすい
+      h4 開発履歴
+      p 2014年
+      ul
+        li 0324  何となく書き始める
+        li 0325  公開したら.txtですら案外好評だったので続ける気になる
+        li 0402  目次をフレーム化するためにhtml化
+        li 0530  IP forwardingの項を追加
+        li 0603  FAQの存在を発見、リンクに追加
+        li 0604  Haml, Scssで全て書き直した
+        li 0605  指摘を受けて修正　誤：element/nullelement.cc 　正： element/standard/nullelement.cc
+        li 0629  hamlをslimで書き直した
+        li 0712  jquery.tocify.jsを利用して動的な目次を作成
+        li 0713  辞書機能を追加、4章までの説明を大きく追加
       javascript:
         $(function() {
             //Calls the tocify method on your HTML div.
