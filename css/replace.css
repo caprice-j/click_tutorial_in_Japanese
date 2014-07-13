@@ -1,0 +1,45 @@
+.dictionary_entry {
+  position: relative;
+  color: #082;
+  font-weight: bold;
+}
+
+.dict_content {
+  display: none;
+  border: 1px solid #000;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+  -moz-border-radius: 8px;
+}
+.dict_content ul {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+.dict_content ul li {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+.dict_content ul :before {
+  content: "";
+}
+.dict_content:before {
+  content: "\f02d  ";
+  font-family: FontAwesome;
+  padding-right: 5px;
+  font-weight: normal;
+  font-style: normal;
+  display: inline;
+}
+
+.dict_visible {
+  margin-left: 30px;
+  display: block;
+  width: 250px;
+  position: absolute;
+  background-color: #FFF;
+  padding: 5px;
+  z-index: 100;
+}

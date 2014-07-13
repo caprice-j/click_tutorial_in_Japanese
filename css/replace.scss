@@ -1,0 +1,47 @@
+$radius_size: 8px;
+.dictionary_entry{
+  position: relative;
+  color: #082;
+  font-weight: bold;
+}
+.dict_content{
+  display: none;
+  border: 1px solid #000;
+  -webkit-border-radius: $radius_size;
+          border-radius: $radius_size;
+  -webkit-border-radius: $radius_size;
+          border-radius: $radius_size;
+  -moz-border-radius: $radius_size;
+  -moz-border-radius: $radius_size;
+  ul{
+      margin-left: 0px;
+      padding-left: 0px;
+    li{
+        list-style-type: disc;
+        padding-left: 20px;
+    }
+    :before{
+      content:"";
+    }
+  }
+  &:before{
+    content: "\f02d  ";
+    font-family: FontAwesome;
+    padding-right: 5px;
+    font-weight: normal;
+    font-style: normal;
+    display: inline;
+  }
+}
+
+.dict_visible{
+  margin-left: 30px;
+  display: block;
+  width: 250px;
+  position: absolute;
+  background-color: #FFF;
+//  opacity: 0.9;
+  padding: 5px;
+  z-index: 100;
+
+}

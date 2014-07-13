@@ -5,6 +5,8 @@ haml lang="ja"
     link rel="stylesheet" href="css/bootstrap-2.3.2.css"
     link rel="stylesheet" href="css/jquery.tocify.css"
     link rel="stylesheet" href="css/basic.css"
+    link rel="stylesheet" href="css/replace.css"
+    link rel="stylesheet" href="lib/fontawesome/font-awesome.css"
     script(src="js/jquery-2.1.0.js")
     script(src="js/jquery-ui-1.10.4.custom.js")
     script(src="js/jquery.tocify.js")
@@ -29,8 +31,8 @@ haml lang="ja"
         li Unix系OS(Linux, Android。Mac OS Xでも一部は動く)上で動く。
         li 拡張する（ライブラリ内に無い、自分の欲しい機能を作る）にはC++の知識がかなり必要とされる。
         li 
-           | 設計の背景については
-           a(href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf") 作者の論文
+           | 設計の背景については 
+           a(href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf") Click作者の論文
            | が詳しい。
         / li
         /   a(href="http://read.cs.ucla.edu/click/") 公式サイト
@@ -38,7 +40,7 @@ haml lang="ja"
 
       h3#install-click インストールする
       h4 インストールの手順
-      p 以下にインストールの手順を示す。git, make, g++はインストール済みと仮定している。g++はclangでも動くはず。
+      p 以下にインストールの手順を示す。git, make, GCCはインストール済みと仮定している。GCCはclangでも動くはず。
       pre.console
         | git clone https://github.com/kohler/click.git
           cd click            # change directory
@@ -62,7 +64,7 @@ haml lang="ja"
       p
         = "--enable-localは"
         a(href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements") 公式FAQ
-        | で指摘されているように、のちにelements/local フォルダ以下に自作のエレメントを追加するときに必要となる。無くても上記のsudo make installまでは成功するが、オンにしておいたほうが無難だろう。
+        | で指摘されているように、のちにelements/local フォルダ以下に自作のエレメントを追加するときに必要となる。無くても上記のsudo make installまでは成功するが、オンにしておいたほうが無難である。重要なのでもう一度言う。オンにしておいたほうが無難である。
 
       h4 --disable-linuxmoduleの詳細
       p sudo make installによって/usr/local/bin以下にClickのバイナリがインストールされた。これでようやくClickによるソフトウェアルーター(正体は,大量の設定項目(Configuration String)が渡されたClickバイナリ内の_main関数のはず)が起動できる...と行きたいところだが、上記のように--disable-linuxmoduleフラグを付けて./configureした場合、click/elements/linuxmodule以下に存在するプログラムは/usr/local/以下にインストールされない。
@@ -108,8 +110,8 @@ haml lang="ja"
           VBoxManage: error: Context: 'CloneTo(dstDisk, ComSafeArrayAsInParam(l_variants), NULL, progress.asOutParam())' at line 740 of file VBoxManageDisk.cpp
 
 
-      h3 試してみる
-      h4#hello-world Hello World相当のことを行う
+      h3 試す
+      h4#hello-world Hello World　(?)を行う
       p
         a(href="http://www.read.cs.ucla.edu/click/tutorial1#preparation") 公式サイトのチュートリアル
         | の簡易版である。
@@ -121,7 +123,7 @@ haml lang="ja"
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
           ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
-      p となればHello World成功である。まだconf/test.clickの中身は理解せずとも問題ない。
+      p となればHello World　(?)成功である。まだconf/test.clickの中身は理解せずとも問題ない。
 
       h4#test-device 既存のClickルータを動かす
       pre.console
@@ -198,7 +200,7 @@ haml lang="ja"
         では、KEYWORDSという単語が登場する。LIMIT 5のLIMITなどがそれである。
       p 論文から理解したいことは以上の4つである。論文後半ではCPUスケジューリングについて言及があるが、パフォーマンスを考慮する段階になるまで放っておいて構わない。
       h6 注. configuration stringの書き方、文法
-      p http://www.read.cs.ucla.edu/click/docs/language#configuration-stringsに文字列、IPアドレスなどconfiguration string１つ１つの記法が紹介されている。大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++ではエラーが出る文法なので、例外的な拡張である。
+      p http://www.read.cs.ucla.edu/click/docs/language#configuration-stringsに文字列、IPアドレスなどconfiguration string１つ１つの記法が紹介されている。大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++では非文なので、例外的な拡張である。
       p 上のURLの説明をhttp://www.read.cs.ucla.edu/click/elements以下にある各elementの説明と併用すれば問題なく一発で書けるはず。
       h4#write-ip-router (発展)既存のelementでIPルータを作る
       p 日経ネットワーク2013年12月号で『ソフトウェア教材「Click」で学ぶルーターの動作』という20pほどの特集が組まれている。おそらく2014年3月現時点でClickの動作について日本語でまとまって解説されているのはこの特集だけだと思われる。数十個の既存elementを組み合わせるとARP処理まで含めたＩＰルータが作れると述べている。日経の雑誌なので学内回線もしくはssl-vpnで読めるらしい。
@@ -232,18 +234,21 @@ haml lang="ja"
       h5 ElementsとDriver
       p
         | オンラインでは
-        a(href="http://www.read.cs.ucla.edu/click/elements") 個別エレメントの紹介ページ
+        a(href="http://www.read.cs.ucla.edu/click/elements") エレメントの一覧
         | と、
-        a(href="http://www.read.cs.ucla.edu/click/docs") 内部ツールの紹介ページ
-        | から読める。オフラインではman Printなどで読める。ただしDriverのmanを初期に参照することは無いだろう。
-        | また、apropos Classifierとすると、manの全文内検索が行える。
+        a(href="http://www.read.cs.ucla.edu/click/docs") 内部ツールの一覧
+        | から読める。オフラインでの閲覧は
+        a(href="#offline-element-doc" class="replace_my_text")
+        | を参照のこと。
+        | ただしDriverのmanを初期に参照することは無い。
+        | また、apropos Classifierとすると、manの全文検索が行える。
 
       h5 API(doxygen)
       p 
         | オンラインでは
         a href="http://read.cs.ucla.edu/click/doxygen/" API documentation
         | から読める。このドキュメントは初めにgit cloneしたClickの中、すなわちclick/doc以下に入っているので、doxygenというプログラムで生成すればオフラインでも読める。方法は
-        a(href="#offline-doxygen") こちらの章
+        a(href="#offline-doxygen-doc" class="replace_my_text")
         | を参照のこと。
       h4 Linuxの実行中情報
       ul
@@ -264,7 +269,7 @@ haml lang="ja"
         ということである。これをしておかないと以下でclick/elements/local以下に自作のelementを追加しても、sudo make installされたとき（clickが、その自作のelementを含めてプログラムを再構成するとき）にコンパイルされない。
       p
         | このチュートリアルでは
-        a(href="#install-click") インストールする
+        a(href="#install-click" class="replace_my_text")
         | の章で既にそれに言及しているため問題はないだろうが、仮にそのオプションを指定していない場合は上記のURLの./configure --prefix=$HOMEを実行する前の作業から、設定をやり直す必要が生じる。
       p click/elements/local以外のディレクトリでも作る方法を以下でも解説するが、まだ一部しか理解していない(EXTRA_DRIVER_OBJSのような、外部ライブラリを使う際に違いが生じるようである)。
 
@@ -406,7 +411,7 @@ haml lang="ja"
       p 
         | そして、StringAccumクラスを学ぶのに最適なソースコードはズバリelements/userlevel/kernelfilter.cc内のdevice_filter()である。この関数は、実はこれまでずっと使ってきたFromDevice.uエレメント(ユーザーレベルのFromDevice)エレメントのSNIFFERというオプションをfalseにした際に呼び出される。まず、
         a(href="http://www.read.cs.ucla.edu/click/elements/fromdevice.u#description") FromDevice.uエレメントのSNIFFERオプションの説明
-        を読んでみよう。
+        | を読んでみよう。
       pre
         | SNIFFER
           Boolean. Specifies whether FromDevice should run in sniffer mode. In non-sniffer mode, FromDevice installs KernelFilter filtering rules to block the kernel from handling any packets arriving on device DEVNAME. Default is true (sniffer mode).
@@ -490,9 +495,9 @@ haml lang="ja"
           そして仮に、そのようなelementsを（まだan elementとして存在していない、もしくは既存のelementsを繋げれば求めている機能が実現されることに気付けなかった）などの理由で見出せなかった場合、作業Bと並行して「自分で新しいelementを実装する」という作業Cが必要となる。
       h5 以上に出てこない関数など
       p click/ns/nsclick.ccで定義される引数なしのclick_random()がそれである。このような関数の定義元を探す場合、ソースコードにタグ付けするcscopeや<a href="http://ctags.sourceforge.net/">ctags</a>といったソフトを使うしかないと思われる。私はsublime text 3のctagsパッケージにずいぶん助けられている。
-      h5 オフラインでエレメントのdocを読む
+      h5#offline-element-doc オフラインでエレメントのdocを読む
       p man FromDeviceなどとすると読める。なお、Linuxのネットワークコマンド（tcpdumpなど）がクリックのどこで使われているかを知るには、apropos tcpdumpなどとすると一覧できて便利かと思われる。
-      h5#offline-doxygen オフラインでAPIドキュメントを読む
+      h5#offline-doxygen-doc オフラインでAPIドキュメントを読む
       p [Mac OS Xの場合]
       pre.console
         | brew install doxygen     # doxygenを何らかの方法でインストール

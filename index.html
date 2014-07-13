@@ -5,6 +5,8 @@
     <link href="css/bootstrap-2.3.2.css" rel="stylesheet">
     <link href="css/jquery.tocify.css" rel="stylesheet">
     <link href="css/basic.css" rel="stylesheet">
+    <link href="css/replace.css" rel="stylesheet">
+    <link href="lib/fontawesome/font-awesome.css" rel="stylesheet">
     <script src="js/jquery-2.1.0.js"></script>
     <script src="js/jquery-ui-1.10.4.custom.js"></script>
     <script src="js/jquery.tocify.js"></script>
@@ -34,7 +36,7 @@
           拡張する（ライブラリ内に無い、自分の欲しい機能を作る）にはC++の知識がかなり必要とされる。
         </li>
         <li>
-          設計の背景については<a href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf">作者の論文</a>が詳しい。
+          設計の背景については <a href="http://pdos.csail.mit.edu/papers/click:tocs00/paper.pdf">Click作者の論文</a>が詳しい。
         </li>
       </ul>
       <h3 id="install-click">
@@ -44,7 +46,7 @@
         インストールの手順
       </h4>
       <p>
-        以下にインストールの手順を示す。git, make, g++はインストール済みと仮定している。g++はclangでも動くはず。
+        以下にインストールの手順を示す。git, make, GCCはインストール済みと仮定している。GCCはclangでも動くはず。
       </p>
       <pre class="console">git clone https://github.com/kohler/click.git
 cd click            # change directory
@@ -70,7 +72,7 @@ Can't find /usr/src/linux, so I can't compile the linuxmodule driver!
 
 =========================================</pre>
       <p>
-        --enable-localは<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">公式FAQ</a>で指摘されているように、のちにelements/local フォルダ以下に自作のエレメントを追加するときに必要となる。無くても上記のsudo make installまでは成功するが、オンにしておいたほうが無難だろう。
+        --enable-localは<a href="http://read.cs.ucla.edu/click/faq#creating-your-own-elements">公式FAQ</a>で指摘されているように、のちにelements/local フォルダ以下に自作のエレメントを追加するときに必要となる。無くても上記のsudo make installまでは成功するが、オンにしておいたほうが無難である。重要なのでもう一度言う。オンにしておいたほうが無難である。
       </p>
       <h4>
         --disable-linuxmoduleの詳細
@@ -169,10 +171,10 @@ VBoxManage: error: Failed to lock source media '/Users/hst/VirtualBox VMs/vm3/se
 VBoxManage: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component Medium, interface IMedium, callee nsISupports
 VBoxManage: error: Context: 'CloneTo(dstDisk, ComSafeArrayAsInParam(l_variants), NULL, progress.asOutParam())' at line 740 of file VBoxManageDisk.cpp</pre>
       <h3>
-        試してみる
+        試す
       </h3>
       <h4 id="hello-world">
-        Hello World相当のことを行う
+        Hello World　(?)を行う
       </h4>
       <p>
         <a href="http://www.read.cs.ucla.edu/click/tutorial1#preparation">公式サイトのチュートリアル</a>の簡易版である。
@@ -187,7 +189,7 @@ ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
 ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369
 ok:    40 | 45000028 00000000 401177c3 01000001 02000002 13691369</pre>
       <p>
-        となればHello World成功である。まだconf/test.clickの中身は理解せずとも問題ない。
+        となればHello World　(?)成功である。まだconf/test.clickの中身は理解せずとも問題ない。
       </p>
       <h4 id="test-device">
         既存のClickルータを動かす
@@ -294,7 +296,7 @@ return input(0).pull();
         注. configuration stringの書き方、文法
       </h6>
       <p>
-        http://www.read.cs.ucla.edu/click/docs/language#configuration-stringsに文字列、IPアドレスなどconfiguration string１つ１つの記法が紹介されている。大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++ではエラーが出る文法なので、例外的な拡張である。
+        http://www.read.cs.ucla.edu/click/docs/language#configuration-stringsに文字列、IPアドレスなどconfiguration string１つ１つの記法が紹介されている。大体C++と同じだが、空白とコメントしか続かないカンマは無視される（即ちPrint(1,)とPrint(1)は同じ扱い）などはC++では非文なので、例外的な拡張である。
       </p>
       <p>
         上のURLの説明をhttp://www.read.cs.ucla.edu/click/elements以下にある各elementの説明と併用すれば問題なく一発で書けるはず。
@@ -360,13 +362,13 @@ return input(0).pull();
         ElementsとDriver
       </h5>
       <p>
-        オンラインでは<a href="http://www.read.cs.ucla.edu/click/elements">個別エレメントの紹介ページ</a>と、<a href="http://www.read.cs.ucla.edu/click/docs">内部ツールの紹介ページ</a>から読める。オフラインではman Printなどで読める。ただしDriverのmanを初期に参照することは無いだろう。また、apropos Classifierとすると、manの全文内検索が行える。
+        オンラインでは<a href="http://www.read.cs.ucla.edu/click/elements">エレメントの一覧</a>と、<a href="http://www.read.cs.ucla.edu/click/docs">内部ツールの一覧</a>から読める。オフラインでの閲覧は<a class="replace_my_text" href="#offline-element-doc"></a>を参照のこと。ただしDriverのmanを初期に参照することは無い。また、apropos Classifierとすると、manの全文検索が行える。
       </p>
       <h5>
         API(doxygen)
       </h5>
       <p>
-        オンラインでは<a href="http://read.cs.ucla.edu/click/doxygen/">API documentation</a>から読める。このドキュメントは初めにgit cloneしたClickの中、すなわちclick/doc以下に入っているので、doxygenというプログラムで生成すればオフラインでも読める。方法は<a href="#offline-doxygen">こちらの章</a>を参照のこと。
+        オンラインでは<a href="http://read.cs.ucla.edu/click/doxygen/">API documentation</a>から読める。このドキュメントは初めにgit cloneしたClickの中、すなわちclick/doc以下に入っているので、doxygenというプログラムで生成すればオフラインでも読める。方法は<a class="replace_my_text" href="#offline-doxygen-doc"></a>を参照のこと。
       </p>
       <h4>
         Linuxの実行中情報
@@ -404,7 +406,7 @@ return input(0).pull();
         自作のelementを使う場合、言っておかないと確実に誰もがハマって数時間を費やす注意点は<strong>./configureのときに--enable-localオプションをつけておく必要がある</strong><ということである>。これをしておかないと以下でclick/elements/local以下に自作のelementを追加しても、sudo make installされたとき（clickが、その自作のelementを含めてプログラムを再構成するとき）にコンパイルされない。</ということである>
       </p>
       <p>
-        このチュートリアルでは<a href="#install-click">インストールする</a>の章で既にそれに言及しているため問題はないだろうが、仮にそのオプションを指定していない場合は上記のURLの./configure --prefix=$HOMEを実行する前の作業から、設定をやり直す必要が生じる。
+        このチュートリアルでは<a class="replace_my_text" href="#install-click"></a>の章で既にそれに言及しているため問題はないだろうが、仮にそのオプションを指定していない場合は上記のURLの./configure --prefix=$HOMEを実行する前の作業から、設定をやり直す必要が生じる。
       </p>
       <p>
         click/elements/local以外のディレクトリでも作る方法を以下でも解説するが、まだ一部しか理解していない(EXTRA_DRIVER_OBJSのような、外部ライブラリを使う際に違いが生じるようである)。
@@ -574,7 +576,7 @@ return -1;
         StringAccumは、Click内部で文字列の連結をかんたんに行うためのクラスである。
       </p>
       <p>
-        そして、StringAccumクラスを学ぶのに最適なソースコードはズバリelements/userlevel/kernelfilter.cc内のdevice_filter()である。この関数は、実はこれまでずっと使ってきたFromDevice.uエレメント(ユーザーレベルのFromDevice)エレメントのSNIFFERというオプションをfalseにした際に呼び出される。まず、<a href="http://www.read.cs.ucla.edu/click/elements/fromdevice.u#description">FromDevice.uエレメントのSNIFFERオプションの説明</a><を読んでみよう>。</を読んでみよう>
+        そして、StringAccumクラスを学ぶのに最適なソースコードはズバリelements/userlevel/kernelfilter.cc内のdevice_filter()である。この関数は、実はこれまでずっと使ってきたFromDevice.uエレメント(ユーザーレベルのFromDevice)エレメントのSNIFFERというオプションをfalseにした際に呼び出される。まず、<a href="http://www.read.cs.ucla.edu/click/elements/fromdevice.u#description">FromDevice.uエレメントのSNIFFERオプションの説明</a>を読んでみよう。
       </p>
       <pre>SNIFFER
 Boolean. Specifies whether FromDevice should run in sniffer mode. In non-sniffer mode, FromDevice installs KernelFilter filtering rules to block the kernel from handling any packets arriving on device DEVNAME. Default is true (sniffer mode).
@@ -691,13 +693,13 @@ elementsのページを飛ばし読みしながら、自分がルーターに付
       <p>
         click/ns/nsclick.ccで定義される引数なしのclick_random()がそれである。このような関数の定義元を探す場合、ソースコードにタグ付けするcscopeや<a href="http://ctags.sourceforge.net/">ctags</a>といったソフトを使うしかないと思われる。私はsublime text 3のctagsパッケージにずいぶん助けられている。
       </p>
-      <h5>
+      <h5 id="offline-element-doc">
         オフラインでエレメントのdocを読む
       </h5>
       <p>
         man FromDeviceなどとすると読める。なお、Linuxのネットワークコマンド（tcpdumpなど）がクリックのどこで使われているかを知るには、apropos tcpdumpなどとすると一覧できて便利かと思われる。
       </p>
-      <h5 id="offline-doxygen">
+      <h5 id="offline-doxygen-doc">
         オフラインでAPIドキュメントを読む
       </h5>
       <p Mac="" OS="" Xの場合=""></p>

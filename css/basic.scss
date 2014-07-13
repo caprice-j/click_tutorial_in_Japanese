@@ -3,7 +3,7 @@ $chotto:10px;
 $toc_list_indent: 0px;
 $window_width: 960px; 
 $leftframe_width: 265px;
-
+$light_blue: #08F;
 #manualTitle{
     margin-top: 10px;
     font-size: 30px;
@@ -94,7 +94,7 @@ a{
     }
 }
 #right_frame a{
-    color: #08F;
+    color: $light_blue;
     // &:before{
     //   content:'';
     // }
@@ -224,3 +224,6 @@ strong{
 }
 
 
+.facolor{
+  color: $light_blue;
+}
