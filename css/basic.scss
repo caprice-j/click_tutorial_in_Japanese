@@ -99,7 +99,29 @@ a{
     //   content:'';
     // }
 }
+code{
+  color: #000;
+  margin:{
+    left: 5px;
+    right: 5px;
+  }
+}
+.inline_console{
+color: #FCFCFC;
+background-color: #000;
+font-family: consolas;
+border: 1px solid #BBB;
+border-radius: 7px;
+padding:{
 
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+} 
+line-height: 2;
+margin: 2px;
+}
 body {
     color: #000;
     font:{
@@ -178,7 +200,11 @@ td.vertical_center{
   font-family:  Consolas, 'Courier New', Courier, Monaco, monospace;
   &:before{content:""; color:#FF0;}
 }
+.errorConsole{
+  color: #FFF;
+  background: #333 url("../img/peke.png") no-repeat right;
 
+}
 h2{
 
 }

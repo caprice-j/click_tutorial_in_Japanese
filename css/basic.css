@@ -77,6 +77,26 @@ a .toclink {
   color: #0088ff;
 }
 
+code {
+  color: #000;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.inline_console {
+  color: #FCFCFC;
+  background-color: #000;
+  font-family: consolas;
+  border: 1px solid #BBB;
+  border-radius: 7px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
+  line-height: 2;
+  margin: 2px;
+}
+
 body {
   color: #000;
   font-family: Verdana,Arial,'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック','MS PGothic',sans-serif;
@@ -150,6 +170,11 @@ td.vertical_center {
 .console:before {
   content: "";
   color: #FF0;
+}
+
+.errorConsole {
+  color: #FFF;
+  background: #333333 url("../img/peke.png") no-repeat right;
 }
 
 h2#toc_index_title {
