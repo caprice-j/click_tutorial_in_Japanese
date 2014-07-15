@@ -532,6 +532,23 @@ sudo make install  # elements.confに従って自作elementをコンパイルす
       <p>
         なお、ドキュメントには書いてないのだがC++をある程度知っている場合によく陥る注意点として、<strong>ドキュメントで指定された関数について、余分にconstをつけてはいけない</strong>というものを挙げたい。これは、例えば<strong>int Element::configure( Vector< String > & conf, ErrorHandler * errh )</strong>について、 引数confを変更しないからと<strong>int Element::configure( const Vector< String > & conf, ErrorHandler * errh )</strong>と変更してしまうと、これは全く別の関数を宣言したことになるため、必要なインターフェイスが実装されていないということでエラーが出る。エラーメッセージが直感的でないため、このタイプのミスは事前に存在を知っておいたほうがよい。
       </p>
+      <h4 id="gdb-click">
+        補足. clickでgdbを使う
+      </h4>
+      <p>
+        以下のように使う。
+      </p>
+      <pre class="console">ls
+my.click
+which click
+/usr/local/bin/click
+gdb /usr/local/bin/click
+
+GNU gdb (GDB) 7.7.1
+... 
+Reading symbols from /usr/local/bin/click...done.
+(gdb) r my.click
+Starting program: /usr/local/bin/click my.click</pre>
       <h4 id="api-element">
         内部APIを用いるelement
       </h4>
@@ -655,7 +672,7 @@ cd click
 nano click/alocal.m4  #  最終行に  m4_include([m4/ax_cxx_compile_stdcxx_11.m4])  と記述
 nano configure.in     # 好きな行に　　AX_CXX_COMPILE_STDCXX_11([noext])　と記述
 autoconf              # 上記の.m4 マクロファイルからconfigureを生成
-./configure --enable-local --disable-local
+./configure --enable-local --disable-linuxmodule
   ...
   checking whether g++ supports C++11 features by default... no
   checking whether g++ supports C++11 features with -std=c++11... yes    #この２行が出たら成功
