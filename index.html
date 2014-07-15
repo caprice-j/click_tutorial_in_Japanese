@@ -137,6 +137,15 @@ conf/udpcount.click:19: unknown element class 'ToHost'</pre>
       </p>
       <p>また、<code>conf/test.click</code>や<code>elements/local</code>のようにスラッシュもしくはカレントディレクトリの表記なく唐突に書き始めた場合は<code>click/conf/test.click</code>や<code>click/elements/local</code>を指すものとする。
       </p>
+      <h4 id="what-is-configure">
+        configureとは何なのか
+      </h4>
+      <p>
+        configureの正体は単なるシェルスクリプトである。しかし通常のシェルスクリプトとconfigureが違うのは、configureはautotoolsの作業工程の1つとして慣習化しており、autoconfコマンドで自動生成する、という点である。何といってもclickのconfigureは14535行もあり、どう考えても既に人力では生成できない分量である。<a href="http://ja.wikipedia.org/wiki/Autotools">Wikipedia</a>には、autoconfコマンドがaclocal.m4 (Clickであれば <code>click/aclocal.m4</code> )を入力としてconfigureを出力するなど、各コマンドの入出力ファイルが図示されている。
+      </p>
+      <p>
+        configureの役目は、ソースコードのうち、現在のマシン上では利用できない機能を取り除き、Makefileを生成することである。
+      </p>
       <h4>
         VirtualBoxのネットワークについて
       </h4>
@@ -638,8 +647,7 @@ DATA 3
       <h4 id="cpp-eleven-element">
         C++11の文法でエレメントを書く
       </h4>
-      <p>
-        C++11を使うには以下の手順を踏む。
+      <p>公式サイトには記載がないが、C++11を使うには以下の手順を踏む。<code>noext</code>は -std=c++11を意味し、<code>ext</code>とすると -std=gnu++11 をフラグとして付与する。
       </p>
       <pre class="console">cd click/m4  # 次の行でマクロファイルをダウンロード
 wget http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=blob_plain;f=m4/ax_cxx_compile_stdcxx_11.m4
