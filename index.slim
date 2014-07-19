@@ -145,6 +145,13 @@ haml lang="ja"
         a(href="#how-to-install-click" class="replace_me") 
         | の節でcloneしたclickディレクトリを指す。たとえばそのclickディレクトリが<code>/home/myname</code>にあった場合、<code>/home/myname/click</code>のことを指すものとする。
       p また、<code>conf/test.click</code>や<code>elements/local</code>のようにスラッシュもしくはカレントディレクトリの表記なく唐突に書き始めた場合は<code>click/conf/test.click</code>や<code>click/elements/local</code>を指すものとする。
+      h4#what-is-configure configureとは何なのか
+      p 
+        | configureの正体は単なるシェルスクリプトである。しかし通常のシェルスクリプトとconfigureが違うのは、configureはautotoolsの作業工程の1つとして慣習化しており、autoconfコマンドで自動生成する、という点である。何といってもclickのconfigureは14535行もあり、どう考えても既に人力では生成できない分量である。
+        a(href="http://ja.wikipedia.org/wiki/Autotools") Wikipedia
+        | には、autoconfコマンドがaclocal.m4 (Clickであれば <code>click/aclocal.m4</code> )を入力としてconfigureを出力するなど、各コマンドの入出力ファイルが図示されている。
+      p configureの役目は、ソースコードのうち、現在のマシン上では利用できない機能を取り除き、Makefileを生成することである。
+
       h4 VirtualBoxのネットワークについて
       p 以下はあくまで僕の理解である。
       .span-one-third.offset4
@@ -235,7 +242,7 @@ haml lang="ja"
           21          -> Print(ok)
           22    -> Discard;
 
-      p 
+      p
         |  14 - 17行目に現れている<strong>(DATA ... , LIMIT 5, STOP true)</strong>のようなコンマで区切られた設定項目を、Click独自の用語でConfiguration stringと呼ぶ。これを使うとclickのバイナリをコンパイルし直さなくてもclickのバイナリの動作自体を変更できるため、非常にお手軽なルータの動作変更手段となっている。DATA, LIMIT, STOPと、合計３つある設定項目を合わせて1つのConfiguration stringとみなす。
       p 18行目にStrip(14)と言う設定があるが、ここでは14だけで1つのConfiguration stringを構成している。
       p 17行目について、LIMIT 5をLIMIT 1にしてみよう。そして以下のコマンドでソフトウェアルータとして動かしてみる。
@@ -424,7 +431,7 @@ haml lang="ja"
       pre.console
         | make elemlist　     # 「sudo make install」でコンパイルされるelementの一覧(click/elements.conf)を書き換えるコマンド。
           sudo make install  # elements.confに従って自作elementをコンパイルする。C++の文法ミスなどはここでエラーが出る。
-      p の2つのコマンドを実行する(<code>elements/local</code>以下に追加した場合はelemlistしなくても良かった気が...未確認)。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを利用可能になる。（myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。<code>man 1 click</code>にあるようにCLICK_BACKTRACEをONにすると原因が掴めるかも？未確認）
+      p の2つのコマンドを実行する(<code>elements/local</code>以下に追加した場合はelemlistする必要はない)。それ以後、click myConfig.clickなどのコンフファイルの中でその自作elementを利用可能になる。（myConfig.clickを実行している最中に落ちた場合は、コンフィグファイルのelementの配置順の誤解、もしくは例外処理の不足が生じてエラーを出していると思われる。<code>man 1 click</code>にあるようにCLICK_BACKTRACEをONにすると原因が掴めるかも？未確認）
 
       p 
         | 以上に書いたような「新しいelementの作り方」の概要は
@@ -443,6 +450,20 @@ haml lang="ja"
         | について、 引数confを変更しないからと
         strong int Element::configure( const Vector< String > & conf, ErrorHandler * errh )
         | と変更してしまうと、これは全く別の関数を宣言したことになるため、必要なインターフェイスが実装されていないということでエラーが出る。エラーメッセージが直感的でないため、このタイプのミスは事前に存在を知っておいたほうがよい。
+      h4#gdb-click 補足. clickでgdbを使う
+      p 以下のように使う。
+      pre.console
+        | ls
+            my.click
+          which click
+            /usr/local/bin/click
+          gdb /usr/local/bin/click
+
+            GNU gdb (GDB) 7.7.1
+            ...
+            Reading symbols from /usr/local/bin/click...done.
+          (gdb) r my.click
+            Starting program: /usr/local/bin/click my.click
 
       h4#api-element 内部APIを用いるelement
       p 新しいelementをClickで実装する際はAPIの理解が必須である。Clickは一般的なC++プログラマなら普通使うであろう「C++のSTLに含まれるStringなどの標準ライブラリクラス」を使わず、独自にそれらのStringクラスに相当するものをを実装し直して使うなどしており、呼び出す関数名や返ってくる戻り値などについてClick内部のソースコードを見ながら逐一確認する必要があるからだ。
@@ -454,6 +475,7 @@ haml lang="ja"
         | なおこのAPIドキュメントはオフライン閲覧もできる。
         a(href="#offline-doxygen-doc" class="replace_me")
         | を参照のこと。
+      p ここではまず試しに、elementが受け取ったパケットの中身を表示するエレメントを作ってみよう。 coming soon
       h4 外部ライブラリを呼び出す
       p coming soon
 
@@ -541,6 +563,24 @@ haml lang="ja"
       p 何かと役立つだろう。Clickの論文中では/proc/click以下からhandlerにアクセスできるとあるが、これはClickをカーネルモードで実行した場合に限る。ユーザーモードではこのようなtelnetによる方法しか存在しない。
       h4 ルータ自体を動的に変える
       p 動いているClickソフトウェアルータに新規のエレメントを追加したいとする。しかしtelnetを使う方法ではelementを動的に追加することはできない。また、一度プロセスをkillして再開する方法では、Queueエレメントに蓄積されたパケットなどが失われてしまうという問題がある。この問題を解決するために、ClickにはHot swappingという機能が備わっている。coming soon
+      h4#cpp-eleven-element C++11の文法でエレメントを書く
+      p 公式サイトには記載がないが、C++11を使うには以下の手順を踏む。<code>noext</code>は -std=c++11を意味し、<code>ext</code>とすると -std=gnu++11 をフラグとして付与する。
+      pre.console
+        | cd click/m4  # 次の行でマクロファイルをダウンロード
+          wget http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=blob_plain;f=m4/ax_cxx_compile_stdcxx_11.m4
+          cd click
+          nano click/alocal.m4  #  最終行に  m4_include([m4/ax_cxx_compile_stdcxx_11.m4])  と記述
+          nano configure.in     # 好きな行に　　AX_CXX_COMPILE_STDCXX_11([noext])　と記述
+          autoconf              # 上記の.m4 マクロファイルからconfigureを生成
+          ./configure --enable-local --disable-linuxmodule
+            ...
+            checking whether g++ supports C++11 features by default... no
+            checking whether g++ supports C++11 features with -std=c++11... yes    #この２行が出たら成功
+            ...
+          sudo make
+          sudo make install
+      p 以上で、少なくとも<code>elements/local</code>以下でC++11の文法が使えるようになる。
+
 
 
       h3 更に調べる(まだ未整理)
@@ -661,6 +701,7 @@ haml lang="ja"
         li click作者の論文の第５章を読めばカーネルモードについて理解が深まるのでは
         li google code prettifyいいかも
         li bootstrapなのにグリッドデザインじゃないね
+        li CheckIPHeaderを内部APIを用いるelementのところに書く
       h5 clickの位置付け
       p （誤認の可能性が高い。よってこの項目の記述内容は容易に変動する。）
       p 

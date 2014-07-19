@@ -183,8 +183,9 @@ h2#toc_index_title {
   margin-top: 0;
 }
 
-h3, h4, h5 {
+h3, h4, h5, h6 {
   margin-top: 30px;
+  text-shadow: 2px 2px 4px #AAA;
 }
 
 h3 {
