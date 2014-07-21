@@ -130,7 +130,7 @@ img {
 #right_frame {
   position: absolute;
   background-color: #FFF;
-  margin: 20px 0 0 285px;
+  margin: 20px 0 0 305px;
   padding: 0;
   height: 100%;
   width: 70%;
@@ -189,9 +189,12 @@ h3, h4, h5, h6 {
 }
 
 h3 {
+  margin-top: 30px;
+  margin-left: -30px;
+  padding-left: 10px;
+  background-color: #EEE;
   counter-increment: num_h_three;
   counter-reset: num_h_four;
-  text-decoration: underline;
 }
 h3:before {
   font-size: 1.5rem;
